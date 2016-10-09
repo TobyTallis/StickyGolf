@@ -5,7 +5,6 @@ public class Platform {
     boolean finalPlatform;
     boolean shadow;
     boolean isDoor;
-    boolean isOpen = false;
     int height;
     int[] trees;
     int width;
@@ -15,7 +14,7 @@ public class Platform {
     double y;
     float angle;
 
-    public Platform(double x, double y, int width, int height, float angle, boolean shadow, int[] trees, boolean isDoor, int link, boolean finalPlatform) {
+    public Platform(double x, double y, int width, int height, float angle, boolean shadow, int[] trees, int link, boolean finalPlatform) {
         this.finalPlatform = finalPlatform;
         this.x = x;
         this.y = y;
@@ -24,19 +23,18 @@ public class Platform {
         this.angle = angle;
         this.trees = trees;
         this.shadow = shadow;
-        this.isDoor = isDoor;
         this.link = link;
     }
 
     public Platform(double x, double y, int width, int height) {
-        this(x, y, width, height, 0, true, new int[0], false, 0, false);
+        this(x, y, width, height, 0, true, new int[0], 0, false);
     }
 
     public Platform(double x, double y, int width, int height, int[] trees) {
-        this(x, y, width, height, 0, true, trees, false, 0, false);
+        this(x, y, width, height, 0, true, trees, 0, false);
     }
 
     public Platform(double x, double y, int width, int height, boolean shadow) {
-        this(x, y, width, height, 0, shadow, new int[0], false, 0, false);
+        this(x, y, width, height, 0, shadow, new int[0], 0, false);
     }
 }

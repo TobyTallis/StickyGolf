@@ -321,10 +321,6 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
         distanceJointDef.bodyB = buttonBodies.get(3);
         joints.add(world.createJoint(distanceJointDef));
 
-        prismaticJointDef.bodyA = buttonBodies.get(0);
-        prismaticJointDef.bodyB = platformBodies.get(0);
-        PrismaticJoint pJoint = (PrismaticJoint) world.createJoint(prismaticJointDef);
-
 /*
         weldJointDef.collideConnected = true;
         weldJointDef.bodyA = buttonBodies.get(1);

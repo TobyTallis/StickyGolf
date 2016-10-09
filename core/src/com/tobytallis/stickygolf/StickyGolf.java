@@ -29,6 +29,8 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.joints.PrismaticJoint;
+import com.badlogic.gdx.physics.box2d.joints.PrismaticJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RopeJointDef;
 
 import java.util.ArrayList;
@@ -52,22 +54,24 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
     Body golfBallBody;
     Level currLevel;
     MovingPlatform mPlatform001 = new MovingPlatform(1300, 400, 2000, 800, 200, 60, 5);
-    Level level00 = new Level(0, 4000, 8000, 300, 400, new Platform[]{new Platform(500, 1200, 300, 60, new int[]{180, 9, 230}), new Platform(1600, 1800, 600, 60, new int[]{430, 8, 200}), new Platform(1100, 200, 60, 600), new Platform(3300, 600, 300, 60, new int[]{50, 3, 170, 200, 1, 200}), new Platform(3300, 1000, 700, 60, new int[]{550, 5, 180}), new Platform(2800, 1200, 100, 60, 0, true, new int[0], false, 0, true), new Platform(2800, 200, 900, 60, new int[]{300, 12, 220, 700, 2, 180}), new Platform(100, 4000, 3900, 60, new int[]{100, 0, 100, 200, 1, 100, 300, 2, 100, 400, 3, 100, 500, 4, 100, 600, 5, 100, 700, 6, 100, 800, 7, 100, 900, 8, 100, 1000, 9, 100, 1100, 10, 100, 1200, 11, 100, 1300, 12, 100, 1400, 13, 100, 1500, 14, 100, 1600, 15, 100, 1700, 16, 100, 1800, 17, 100, 1900, 18, 100, 2000, 19, 100, 2100, 20, 100, 2200, 21, 100, 2300, 22, 100, 2400, 23, 100, 2500, 24, 100, 2600, 25, 100, 2700, 26, 100}), new Platform(0, 0, 4000, 60, 0, false, new int[]{200, 2, 220, 800, 4, 140, 2400, 11, 230}, false, 0, false), new Platform(0, 0, 60, 8000, false), new Platform(3940, 0, 60, 8000, false), new Platform(0, 7940, 4000, 60, false), new Platform(300, 6000, 600, 60, 20, true, new int[0], false, 0, false)}, new Box[]{new Box(500, 300, 50, 50, 0), new Box(600, 300, 50, 50, 0), new Box(500, 380, 50, 50, 0), new Box(2400, 6060, 50, 50, 0), new Box(600, 6100, 50, 50, 0), new Box(700, 300, 50, 50, 0)}, new Switch[]{new Switch(1650, 1900, 60, 1), new Switch(800, 400, 60, 1), new Switch(3050, 1200, 60, 2), new Switch(2300, 6300, 60, 3)}, new Platform[]{new Platform(1100, 60, 60, 140, 0, true, new int[0], true, 1, false), new Platform(2770, 1170, 160, 200, 0, true, new int[0], true, 2, false), new Platform(2000, 6000, 500, 60, 0, true, new int[0], true, 3, false)}, new MovingPlatform[]{new MovingPlatform(600, 5000, 2800, 5000, 200, 60, 5, 2), mPlatform001, new MovingPlatform(400, 7000, 1600, 6200, 200, 60, 3, 30, 2, true, new int[0], true, 0)}, new Text[]{new Text(2, "World 0, Level 0", 200, 400), new Text(1, "this is a", 670, 500), new Text(2, "switch", 670, 470), new Text(1, "it opens", 920, 200), new Text(1, "this", 920, 170), new Text(2, "door", 967, 170), new Text(1, "this", 0, 200, mPlatform001), new Text(2, "platform", 45, 201, mPlatform001), new Text(1, "moves", 30, 170, mPlatform001)});
+    Level level00 = new Level(0, 4000, 8000, 300, 400, new Platform[]{new Platform(500, 1200, 300, 60, new int[]{180, 9, 230}), new Platform(1600, 1800, 600, 60, new int[]{430, 8, 200}), new Platform(1100, 200, 60, 600), new Platform(3300, 600, 300, 60, new int[]{50, 3, 170, 200, 1, 200}), new Platform(3300, 1000, 700, 60, new int[]{550, 5, 180}), new Platform(2800, 1200, 100, 60, 0, true, new int[0], 0, true), new Platform(2800, 200, 900, 60, new int[]{300, 12, 220, 700, 2, 180}), new Platform(100, 4000, 3900, 60, new int[]{100, 0, 100, 200, 1, 100, 300, 2, 100, 400, 3, 100, 500, 4, 100, 600, 5, 100, 700, 6, 100, 800, 7, 100, 900, 8, 100, 1000, 9, 100, 1100, 10, 100, 1200, 11, 100, 1300, 12, 100, 1400, 13, 100, 1500, 14, 100, 1600, 15, 100, 1700, 16, 100, 1800, 17, 100, 1900, 18, 100, 2000, 19, 100, 2100, 20, 100, 2200, 21, 100, 2300, 22, 100, 2400, 23, 100, 2500, 24, 100, 2600, 25, 100, 2700, 26, 100}), new Platform(0, 0, 4000, 60, 0, false, new int[]{200, 2, 220, 800, 4, 140, 2400, 11, 230}, 0, false), new Platform(0, 0, 60, 8000, false), new Platform(3940, 0, 60, 8000, false), new Platform(0, 7940, 4000, 60, false), new Platform(300, 6000, 600, 60, 20, true, new int[0], 0, false)}, new Box[]{new Box(500, 300, 50, 50, 0), new Box(600, 300, 50, 50, 0), new Box(500, 380, 50, 50, 0), new Box(2400, 6060, 50, 50, 0), new Box(600, 6100, 50, 50, 0), new Box(700, 300, 50, 50, 0)}, new Switch[]{new Switch(1650, 1900, 60, 1), new Switch(800, 400, 60, 1), new Switch(300, 1600, 60, 2), new Switch(2300, 6300, 60, 3)}, new Door[]{new Door(1115, 60, 1115, 200, 30, 140, 1), new Door(500, 1800, 500, 2200, 30, 400, 2)}, new MovingPlatform[]{new MovingPlatform(600, 5000, 2800, 5000, 200, 60, 5, 2), mPlatform001, new MovingPlatform(400, 7000, 1600, 6200, 200, 60, 3, 30, 2, true, new int[0], true, 0)}, new Text[]{new Text(2, "World 0, Level 0", 200, 400), new Text(1, "this is a", 670, 500), new Text(2, "switch", 670, 470), new Text(1, "it opens", 920, 200), new Text(1, "this", 920, 170), new Text(2, "door", 967, 170), new Text(1, "this", 0, 200, mPlatform001), new Text(2, "platform", 45, 201, mPlatform001), new Text(1, "moves", 30, 170, mPlatform001)});
     Box box111 = new Box(625, 630, 50, 50, 0);
-    Level level11 = new Level(1, 1000, 1000, 100, 200, new Platform[]{new Platform(-60, -60, 1120, 60, false), new Platform(-60, 0, 60, 1000, false), new Platform(1000, 0, 60, 1000, false), new Platform(-60, 1000, 1120, 60, false), new Platform(-60, 100, 360, 60), new Platform(300, 500, 100, 60), new Platform(450, 550, 100, 60), new Platform(600, 600, 100, 60), new Platform(800, 700, 200, 60), new Platform(801, 760, 198, 1, 0, true, new int[0], false, 0, true), new Platform(200, 500, 60, 300)}, new Box[]{box111, new Box(710, 300, 150, 80, 0)}, new Switch[]{new Switch(300, 800, 60, 1, false)}, new Platform[]{new Platform(770, 700, 30, 300, 0, true, new int[0], true, 1, false)}, new MovingPlatform[0], new Text[]{new Text(2, "World 1, Level 1", 20, 40), new Text(1, "this", -30, 50, box111), new Text(2, "box", -10, 47, null, box111), new Text(1, "looks fun", -30, 20, box111)});
-    Level level12 = new Level(1, 3000, 3000, 100, 200, new Platform[]{new Platform(-60, -60, 3120, 60, false), new Platform(-60, 0, 60, 3000, false), new Platform(3000, 0, 60, 3000, false), new Platform(-60, 3000, 3120, 60, false), new Platform(-60, 970, 2060, 60), new Platform(1000, 1970, 2000, 60), new Platform(2700, 2030, 200, 1, 0, true, new int[0], false, 0, true)}, new Box[]{new Box(200, 300, 50, 50, 0), new Box(1470, 0, 60, 950, 0), new Box(1470, 1030, 60, 900, 0)}, new Switch[0], new Platform[0], new MovingPlatform[]{new MovingPlatform(2700, 300, 2700, 1700, 180, 60, 6), new MovingPlatform(120, 1330, 120, 2730, 180, 60, 6)}, new Text[]{new Text(2, "World 1, Level 2", 300, 400)});
+    Level level11 = new Level(1, 1000, 1000, 100, 200, new Platform[]{new Platform(-60, -60, 1120, 60, false), new Platform(-60, 0, 60, 1000, false), new Platform(1000, 0, 60, 1000, false), new Platform(-60, 1000, 1120, 60, false), new Platform(-60, 100, 360, 60), new Platform(300, 500, 100, 60), new Platform(450, 550, 100, 60), new Platform(600, 600, 100, 60), new Platform(800, 700, 200, 60), new Platform(801, 760, 198, 1, 0, true, new int[0], 0, true), new Platform(200, 500, 60, 300)}, new Box[]{box111, new Box(710, 300, 150, 80, 0)}, new Switch[]{new Switch(300, 800, 60, 1, false)}, new Door[]{new Door(770, 700, 770, 1000, 30, 300, 1)}, new MovingPlatform[0], new Text[]{new Text(2, "World 1, Level 1", 20, 40), new Text(1, "this", -30, 50, box111), new Text(2, "box", -10, 47, null, box111), new Text(1, "looks fun", -30, 20, box111)});
+    Level level12 = new Level(1, 3000, 3000, 100, 200, new Platform[]{new Platform(-60, -60, 3120, 60, false), new Platform(-60, 0, 60, 3000, false), new Platform(3000, 0, 60, 3000, false), new Platform(-60, 3000, 3120, 60, false), new Platform(-60, 970, 2060, 60), new Platform(1000, 1970, 2000, 60), new Platform(2700, 2030, 200, 1, 0, true, new int[0], 0, true)}, new Box[]{new Box(200, 300, 50, 50, 0), new Box(1470, 0, 60, 950, 0), new Box(1470, 1030, 60, 900, 0)}, new Switch[0], new Door[0], new MovingPlatform[]{new MovingPlatform(2700, 300, 2700, 1700, 180, 60, 6), new MovingPlatform(120, 1330, 120, 2730, 180, 60, 6)}, new Text[]{new Text(2, "World 1, Level 2", 300, 400)});
     private Level[] levels = new Level[]{level00, level11, level12};
     private int originalZoomPoint;
     private ArrayList<Body> platformBodies = new ArrayList<Body>();
     private ArrayList<Platform> platforms = new ArrayList<Platform>();
     private ArrayList<Body> movingPlatformBodies = new ArrayList<Body>();
     private ArrayList<MovingPlatform> movingPlatforms = new ArrayList<MovingPlatform>();
+    private ArrayList<Body> doorBodies = new ArrayList<Body>();
+    private ArrayList<Door> doors = new ArrayList<Door>();
     private ArrayList<Body> boxBodies = new ArrayList<Body>();
     private ArrayList<Box> boxes = new ArrayList<Box>();
     private ArrayList<Tree> trees = new ArrayList<Tree>();
     private ArrayList<Switch> switches = new ArrayList<Switch>();
     private ArrayList<Text> texts = new ArrayList<Text>();
-    private HashMap<Switch, ArrayList<Platform>> links = new HashMap<Switch, ArrayList<Platform>>();
+    private HashMap<Switch, ArrayList<Door>> links = new HashMap<Switch, ArrayList<Door>>();
     private int screenH;
     private int screenW;
     private ShapeRenderer shapeRenderer;
@@ -83,8 +87,11 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
     private BitmapFont boldText;
     private Joint ropeJoint;
     RopeJointDef ropeJointDef = new RopeJointDef();
+    private ArrayList<PrismaticJoint> doorJoints = new ArrayList<PrismaticJoint>();
+    PrismaticJointDef prismaticJointDef = new PrismaticJointDef();
     Filter platformFilter;
     Filter noCollisionFilter;
+    Filter doorFilter;
     private float step = 1/60f;
     private boolean slowmotion = false;
     private int applyForceCount = 0;
@@ -193,10 +200,28 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         shapeRenderer.rect(0, 0, worldW, worldH);
         // draw shadows
         shapeRenderer.setColor(shapeRenderer.getColor().add(-38 / 255f, -38 / 255f, -38 / 255f, 0));
+        for (int i = 0; i < doors.size(); i++) {
+            Door d = doors.get(i);
+            Body b = doorBodies.get(i);
+            if (d.isOpen) {
+                if (ropeJointDef.bodyA == b || ropeJointDef.bodyB == b) {
+                    if (golfBallBody.getJointList().size > 0) {
+                        world.destroyJoint(ropeJoint);
+                    }
+                }
+            }
+            d.x = (double) ((PIXELS_TO_METRES * b.getPosition().x) - (d.width / 2));
+            d.y = (double) ((PIXELS_TO_METRES * b.getPosition().y) - (d.height / 2));
+            float x = (float) d.x;
+            float y = (float) d.y;
+            if (d.shadow) {
+                shapeRenderer.rect(x + screenW / 20, y - screenH / 40, d.width / 2, d.height / 2, d.width, d.height, 1, 1, d.angle);
+            }
+        }
         for (Platform p : platforms) {
             float x = (float) p.x;
             float y = (float) p.y;
-            if (p.shadow && !p.isOpen) {
+            if (p.shadow) {
                 shapeRenderer.rect(x + screenW / 20, y - screenH / 40, p.width / 2, p.height / 2, p.width, p.height, 1, 1, p.angle);
             }
             if (p.finalPlatform) {
@@ -280,25 +305,13 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             }
             shapeRenderer.rect(x + (s.size / 8), y + (s.size / 8), s.size * 3 / 4, s.size * 3 / 4);
         }
-        for (int i = 0; i < platforms.size(); i++) {
-            Platform p = platforms.get(i);
-            Body d = platformBodies.get(i);
-            if (p.isDoor && p.isOpen) {
-                //float x = (float) p.x;
-                //float y = (float) p.y;
-                //shapeRenderer.setColor(108 / 255f, 122 / 255f, 137 / 255f, 1);
-                //shapeRenderer.rect(x, y, p.width, p.height);
-                d.getFixtureList().get(0).setFilterData(noCollisionFilter);
-                if (ropeJointDef.bodyA == d || ropeJointDef.bodyB == d) {
-                    if (world.getJointCount() > 0) {
-                        world.destroyJoint(ropeJoint);
-                    }
-                }
-            } else if (p.isDoor) {
-                d.getFixtureList().get(0).setFilterData(platformFilter);
-            }
-        }
         // draw foreground objects
+        for (Door d : doors) {
+            float x = (float) d.x;
+            float y = (float) d.y;
+            shapeRenderer.setColor(22 / 255f, 160 / 255f, 133 / 255f, 1);
+            shapeRenderer.rect(x, y, d.width / 2, d.height / 2, d.width, d.height, 1, 1, d.angle);
+        }
         for (Platform p : platforms) {
             float x = (float) p.x;
             float y = (float) p.y;
@@ -308,14 +321,8 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
                 shapeRenderer.setColor(colours[1]);
                 shapeRenderer.triangle(x + p.width / 2 + 5, y + p.height + 60, x + p.width / 2 + 5, y + p.height + 80, x + p.width / 2 - 45, y + p.height + 60);
             }
-            if (p.isDoor) {
-                shapeRenderer.setColor(22 / 255f, 160 / 255f, 133 / 255f, 1);
-            } else {
-                shapeRenderer.setColor(150 / 255f, 40 / 255f, 27 / 255f, 1);
-            }
-            if (!p.isOpen) {
-                shapeRenderer.rect(x, y, p.width / 2, p.height / 2, p.width, p.height, 1, 1, p.angle);
-            }
+            shapeRenderer.setColor(150 / 255f, 40 / 255f, 27 / 255f, 1);
+            shapeRenderer.rect(x, y, p.width / 2, p.height / 2, p.width, p.height, 1, 1, p.angle);
         }
         for (MovingPlatform m : movingPlatforms) {
             float x = (float) m.x;
@@ -403,7 +410,9 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         golfBall.height = screenW / 20;
         platforms.clear();
         platforms.addAll(Arrays.asList(currLevel.platforms));
-        platforms.addAll(Arrays.asList(currLevel.doors));
+        doors.clear();
+        doors.addAll(Arrays.asList(currLevel.doors));
+        doorJoints.clear();
         movingPlatforms.clear();
         movingPlatforms.addAll(Arrays.asList(currLevel.movingPlatforms));
         boxes.clear();
@@ -417,14 +426,16 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             for (int i = 0; i < p.trees.length; i += 3) {
                 trees.add(new Tree(p.x + p.trees[i], p.y + p.height, p.trees[i+1], p.trees[i+2]));
             }
+        }
+        for (Door d : doors) {
             for (Switch s : switches) {
-                if (p.link == s.link) {
-                    ArrayList<Platform> pList = new ArrayList<Platform>();
+                if (d.link == s.link) {
+                    ArrayList<Door> dList = new ArrayList<Door>();
                     try {
-                        pList.addAll(links.get(s));
+                        dList.addAll(links.get(s));
                     } catch (NullPointerException e) {}
-                    pList.add(p);
-                    links.put(s, pList);
+                    dList.add(d);
+                    links.put(s, dList);
                 }
             }
         }
@@ -479,8 +490,9 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
                 } else {
                     ballPressed = false;
                     s.isPressed = !s.isPressed;
-                    for (Platform p : links.get(s)) {
-                        p.isOpen = !p.isOpen;
+                    for (Door d : links.get(s)) {
+                        d.isOpen = !d.isOpen;
+                        d.joint.setMotorSpeed(-d.joint.getMotorSpeed());
                     }
                 }
             }
@@ -523,7 +535,7 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
                 System.out.println(golfBall.hits);
                 texts.add(new Text(1, Integer.toString(golfBall.hits), (int) golfBall.x, (int) golfBall.y));
             }
-            if (world.getJointCount() > 0) {
+            if (golfBallBody.getJointList().size > 0) {
                 world.destroyJoint(ropeJoint);
             }
             applyForceCount = (int) (1 / (step * 60));
@@ -593,7 +605,11 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
 
         platformFilter = new Filter();
         platformFilter.categoryBits = 0x0002;
-        platformFilter.maskBits = -1;
+        platformFilter.maskBits = 0x0001 | 0x0002 | 0x0004;
+
+        doorFilter = new Filter();
+        doorFilter.categoryBits = 0x0008;
+        doorFilter.maskBits = 0x0001 | 0x0004 | 0x0008;
 
         noCollisionFilter = new Filter();
         noCollisionFilter.categoryBits = 0x0000;
@@ -635,17 +651,11 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             Body platformBody = world.createBody(platformBodyDef);
             platformShape.setAsBox(w / 2, h / 2, new Vector2(0, 0), 0);
             platformFixtureDef.shape = platformShape;
-            //if (platforms.size() - i <= 4) {
-            //    platformFixtureDef.filter.maskBits = 0x0001 | 0x0002 | 0x0004;
-            //    platformBody.createFixture(platformFixtureDef);
-            //} else {
-            //    platformFixtureDef.filter.maskBits = -1;
             platformBody.createFixture(platformFixtureDef);
-            //}
             platformBody.setUserData(p);
+            platformBody.getFixtureList().get(0).setFilterData(platformFilter);
             platformBodies.add(platformBody);
         }
-        //platformShape.dispose();
 
         BodyDef movingPlatformBodyDef = new BodyDef();
         movingPlatformBodyDef.type = BodyType.KinematicBody;
@@ -669,17 +679,56 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
                 platformShape.setAsBox(w / 2, h / 3, new Vector2(0, -h / 6), 0);
             }
             platformFixtureDef.shape = platformShape;
-            //if (platforms.size() - i <= 4) {
-            //    platformFixtureDef.filter.maskBits = 0x0001 | 0x0002 | 0x0004;
-            //    platformBody.createFixture(platformFixtureDef);
-            //} else {
-            //    platformFixtureDef.filter.maskBits = -1;
             movingPlatformBody.createFixture(platformFixtureDef);
-            //}
             movingPlatformBody.setUserData(m);
             movingPlatformBody.setLinearVelocity((float) (m.endX - m.startX) / (m.time * PIXELS_TO_METRES), (float) (m.endY - m.startY) / (m.time * PIXELS_TO_METRES));
             movingPlatformBodies.add(movingPlatformBody);
         }
+
+        BodyDef doorBodyDef = new BodyDef();
+        doorBodyDef.type = BodyType.DynamicBody;
+        doorBodyDef.fixedRotation = true;
+        doorBodyDef.bullet = true;
+        FixtureDef doorFixtureDef = new FixtureDef();
+        doorFixtureDef.density = 1;
+        doorFixtureDef.restitution = 0;
+        doorFixtureDef.friction = 1;
+        doorFixtureDef.filter.categoryBits = doorFilter.categoryBits;
+        doorFixtureDef.filter.maskBits = doorFilter.maskBits;
+        BodyDef doorHoldBodyDef = new BodyDef();
+        doorHoldBodyDef.type = BodyType.StaticBody;
+        doorHoldBodyDef.bullet = true;
+        FixtureDef doorHoldFixtureDef = new FixtureDef();
+        doorHoldFixtureDef.filter.categoryBits = noCollisionFilter.categoryBits;
+        doorHoldFixtureDef.filter.maskBits = noCollisionFilter.maskBits;
+        for (int i = 0; i < doors.size(); i++) {
+            Door d = doors.get(i);
+            float w = d.width / PIXELS_TO_METRES;
+            float h = d.height / PIXELS_TO_METRES;
+            doorBodyDef.position.set((float) d.x / PIXELS_TO_METRES + w / 2, (float) d.y / PIXELS_TO_METRES + h / 2);
+            doorBodyDef.angle = (float) (d.angle * Math.PI) / 180;
+            Body doorBody = world.createBody(doorBodyDef);
+            platformShape.setAsBox(w / 2, h / 2, new Vector2(0, 0), 0);
+            doorFixtureDef.shape = platformShape;
+            doorBody.createFixture(platformFixtureDef);
+            doorBody.setUserData(d);
+            doorBody.getFixtureList().get(0).setFilterData(doorFilter);
+            doorBodies.add(doorBody);
+            doorHoldBodyDef.position.set((float) d.openX / PIXELS_TO_METRES + w / 2, (float) d.openY / PIXELS_TO_METRES + h /2);
+            Body doorHoldBody = world.createBody(doorHoldBodyDef);
+            platformShape.setAsBox(1 / PIXELS_TO_METRES, 1 / PIXELS_TO_METRES);
+            doorHoldFixtureDef.shape = platformShape;
+            doorHoldBody.createFixture(doorHoldFixtureDef);
+            prismaticJointDef.initialize(doorBody, doorHoldBody, doorHoldBody.getWorldCenter(), new Vector2(doorHoldBody.getPosition().sub(doorBody.getPosition())).nor());
+            prismaticJointDef.collideConnected = false;
+            prismaticJointDef.enableLimit = true;
+            prismaticJointDef.lowerTranslation = (float) -getDistance(doorHoldBody.getPosition(), doorBody.getPosition());
+            prismaticJointDef.enableMotor = true;
+            prismaticJointDef.motorSpeed = 10;
+            prismaticJointDef.maxMotorForce = 500;
+            d.joint = ((PrismaticJoint) world.createJoint(prismaticJointDef));
+        }
+
         platformShape.dispose();
 
         BodyDef boxBodyDef = new BodyDef();
@@ -713,9 +762,10 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
                 ArrayList<Body> bodies = new ArrayList<Body>(platformBodies);
                 bodies.addAll(movingPlatformBodies);
                 bodies.addAll(boxBodies);
+                bodies.addAll(doorBodies);
                 for (Body b : bodies) {
                     if (((contact.getFixtureA().getBody() == golfBallBody && contact.getFixtureB().getBody() == b) ||
-                            (contact.getFixtureB().getBody() == golfBallBody && contact.getFixtureA().getBody() == b)) && world.getJointCount() == 0) {
+                            (contact.getFixtureB().getBody() == golfBallBody && contact.getFixtureA().getBody() == b)) && golfBallBody.getJointList().size == 0) {
                         stopMovement = true;
                         ropeJointDef.bodyA = golfBallBody;
                         ropeJointDef.bodyB = b;
