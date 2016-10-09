@@ -2,82 +2,41 @@ package com.tobytallis.stickygolf;
 
 public class Platform {
 
-    private double x;
-    private double y;
-    private int width;
-    private int height;
-    private int orient;
-    private int[] trees;
-    private boolean finalPlatform = false;
+    boolean finalPlatform;
+    boolean shadow;
+    boolean isDoor;
+    boolean isOpen = false;
+    int height;
+    int[] trees;
+    int width;
+    // links to action (0 is no action)
+    int link;
+    double x;
+    double y;
+    float angle;
 
-    public Platform(double startX, double startY, int startWidth, int startHeight, int orientation, int[] treeList) {
-        x = startX;
-        y = startY;
-        width = startWidth;
-        height = startHeight;
-        // orientation format  1 = up, 2 = right, 3 = down, 4 = left
-        orient = orientation;
-        // treeList should be in format {x position from platform start, type of tree (1-5), size of tree (256 max probably)}
-        trees = treeList;
+    public Platform(double x, double y, int width, int height, float angle, boolean shadow, int[] trees, boolean isDoor, int link, boolean finalPlatform) {
+        this.finalPlatform = finalPlatform;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.angle = angle;
+        this.trees = trees;
+        this.shadow = shadow;
+        this.isDoor = isDoor;
+        this.link = link;
     }
 
-    public Platform(double startX, double startY, int startWidth, int startHeight, int orientation) {
-        this(startX, startY, startWidth, startHeight, orientation, new int[] {});
+    public Platform(double x, double y, int width, int height) {
+        this(x, y, width, height, 0, true, new int[0], false, 0, false);
     }
 
-    public void setX(double newX) {
-        x = newX;
+    public Platform(double x, double y, int width, int height, int[] trees) {
+        this(x, y, width, height, 0, true, trees, false, 0, false);
     }
 
-    public void setY(double newY) {
-        y = newY;
-    }
-
-    public void setWidth(int newWidth) {
-        width = newWidth;
-    }
-
-    public void setHeight(int newHeight) {
-        height = newHeight;
-    }
-
-    public void setOrient(int newOrient) {
-        orient = newOrient;
-    }
-
-    public void setTrees(int[] newTrees) {
-        trees = newTrees;
-    }
-
-    public void setFinalPlatform(boolean newFinalPlatform) {
-        finalPlatform = newFinalPlatform;
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public int getOrient() {
-        return orient;
-    }
-
-    public int[] getTrees() {
-        return trees;
-    }
-
-    public boolean getFinalPlatform() {
-        return finalPlatform;
+    public Platform(double x, double y, int width, int height, boolean shadow) {
+        this(x, y, width, height, 0, shadow, new int[0], false, 0, false);
     }
 }
