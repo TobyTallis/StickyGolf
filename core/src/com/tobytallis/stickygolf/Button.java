@@ -9,14 +9,14 @@ public class Button {
     double x;
     double y;
     Texture texture;
-    int screen;
+    int target;
 
-    public Button(double x, double y, int radius, float angle, Texture texture, int screen) {
+    public Button(double x, double y, int radius, float angle, Texture texture, int target) {
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.angle = angle;
         this.texture = texture;
-        this.screen = screen;
+        this.target = target;
     }
 }

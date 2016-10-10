@@ -7,6 +7,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -71,6 +72,7 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
     private ArrayList<Tree> trees = new ArrayList<Tree>();
     private ArrayList<Switch> switches = new ArrayList<Switch>();
     private ArrayList<Text> texts = new ArrayList<Text>();
+    private ArrayList<Button> UIButtons = new ArrayList<Button>();
     private HashMap<Switch, ArrayList<Door>> links = new HashMap<Switch, ArrayList<Door>>();
     private int screenH;
     private int screenW;
@@ -96,6 +98,9 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
     private boolean slowmotion = false;
     private int applyForceCount = 0;
     private Vector2 desiredCameraCoords;
+    private Texture lookButtonTexture;
+    private Texture powerUpButtonTexture;
+    private int pressedButton = -1;
 
     public StickyGolf(Screens gam) {
         originalZoomPoint = 0;
@@ -136,6 +141,8 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("Roboto-Black.ttf"));
         parameter.size = 40;
         boldText = fontGenerator.generateFont(parameter);
+        lookButtonTexture = new Texture(Gdx.files.internal("LookButton.png"));
+        powerUpButtonTexture = new Texture(Gdx.files.internal("PowerUpButton.png"));
     }
 
     public void create() {
@@ -152,17 +159,7 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         if (golfBall.cameraFollow) {
             camera.position.x += (((float) golfBall.x) - camera.position.x) / 10;
             camera.position.y += (((float) golfBall.y) - camera.position.y) / 10;
-        } else {/*
-            if (desiredCameraCoords.x > worldW) {
-                desiredCameraCoords.x = worldW;
-            } else if (desiredCameraCoords.x < 0) {
-                desiredCameraCoords.x = 0;
-            }
-            if (desiredCameraCoords.y > worldH) {
-                desiredCameraCoords.y = worldH;
-            } else if (desiredCameraCoords.y < 0) {
-                desiredCameraCoords.y = 0;
-            }*/
+        } else {
             desiredCameraCoords.x = Math.min(Math.max(desiredCameraCoords.x, 0), worldW);
             desiredCameraCoords.y = Math.min(Math.max(desiredCameraCoords.y, 0), worldH);
             camera.position.x += (desiredCameraCoords.x - camera.position.x) / 10;
@@ -378,15 +375,15 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             Vector2 centre = ropeJointDef.bodyB.getWorldPoint(ropeJointDef.localAnchorB);
             shapeRenderer.circle(centre.x, centre.y, 10);
         }*/
-        // draw UI elements
-        shapeRenderer.setProjectionMatrix(screenMatrix);
-        if (golfBall.cameraFollow) {
-            shapeRenderer.setColor(1, 0, 0, 1);
-        } else {
-            shapeRenderer.setColor(0, 1, 0, 1);
-        }
-        shapeRenderer.rect(0, screenH * 3 / 5, screenW / 5, screenH / 5);
         shapeRenderer.end();
+        // draw UI elements
+        screenSpriteBatch.begin();
+        for (Button b : UIButtons) {
+            float x = (float) b.x;
+            float y = (float) b.y;
+            screenSpriteBatch.draw(b.texture, x - b.radius, y - b.radius, b.radius, b.radius, b.radius * 2, b.radius * 2, 1, 1, b.angle, 0, 0, 512, 512, false, false);
+        }
+        screenSpriteBatch.end();
         //lights.get(0).setPosition(golfBallBody.getPosition());
         //debugRenderer.render(world, debugMatrix);
         //rayHandler.setCombinedMatrix(debugMatrix);
@@ -422,6 +419,9 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         switches.addAll(Arrays.asList(currLevel.switches));
         texts.clear();
         texts.addAll(Arrays.asList(currLevel.texts));
+        UIButtons.clear();
+        UIButtons.add(new Button(50, screenH - 50, 50, 0, lookButtonTexture, 0));
+        UIButtons.add(new Button(150, screenH - 50, 50, 0, powerUpButtonTexture, 1));
         trees.clear();
         for (Platform p : platforms) {
             for (int i = 0; i < p.trees.length; i += 3) {
@@ -494,28 +494,37 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
                 }
             }
         }
-        if (screenX < Gdx.graphics.getWidth() / 5 && screenY < Gdx.graphics.getHeight() / 5) {
-            ballPressed = false;
-            slowmotion = !slowmotion;
-            if (slowmotion) {
-                step = 1 / 300f;
-            } else {
-                step = 1 / 60f;
+        if (!golfBall.cameraFollow) {
+            desiredCameraCoords = worldCoords;
+        }
+        if (pressedButton == -1) {
+            for (Button b : UIButtons) {
+                if ((screenX < b.x + b.radius && screenX > b.x - b.radius) && (screenH - screenY < b.y + b.radius && screenH - screenY > b.y - b.radius)) {
+                    ballPressed = false;
+                    switch (b.target) {
+                        case 0:
+                            System.out.println("HOWDY");
+                            golfBall.cameraFollow = !golfBall.cameraFollow;
+                            desiredCameraCoords = golfBallCoords;
+                            break;
+                        case 1:
+                            slowmotion = !slowmotion;
+                            if (slowmotion) {
+                                step = 1 / 300f;
+                            } else {
+                                step = 1 / 60f;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
         }
         if (screenX > Gdx.graphics.getWidth() * 3 / 4) {
             ballPressed = false;
             zoomChange = true;
             originalZoomPoint = screenY;
-        }
-        if (!golfBall.cameraFollow) {
-            desiredCameraCoords = worldCoords;
-        }
-        if (screenX < Gdx.graphics.getWidth() / 5 && screenY > Gdx.graphics.getHeight() / 5 && screenY < Gdx.graphics.getHeight() * 2 / 5) {
-            ballPressed = false;
-            System.out.println("HOWDY");
-            golfBall.cameraFollow = !golfBall.cameraFollow;
-            desiredCameraCoords = golfBallCoords;
         }
         if (ballPressed && golfBall.cameraFollow) {
             ballTouched = true;

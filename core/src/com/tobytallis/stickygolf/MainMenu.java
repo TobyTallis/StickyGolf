@@ -4,7 +4,6 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -13,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -25,10 +25,8 @@ import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
-import com.badlogic.gdx.physics.box2d.joints.PrismaticJoint;
 import com.badlogic.gdx.physics.box2d.joints.PrismaticJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RopeJointDef;
-import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 
 import java.util.ArrayList;
 
@@ -107,7 +105,7 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
         Gdx.gl.glClearColor(150 / 255f, 40 / 255f, 27 / 255f, 1);
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.begin(ShapeType.Filled);
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.setColor(238 / 255f, 238 / 255f, 238 / 255f, 1);
         shapeRenderer.rect(0, 0, screenW, screenH);
@@ -136,7 +134,7 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
             spriteBatch.draw(b.texture, x - b.radius, y - b.radius, b.radius, b.radius, b.radius * 2, b.radius * 2, 1, 1, b.angle, 0, 0, 512, 512, false, false);
         }
         spriteBatch.end();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.begin(ShapeType.Filled);
         shapeRenderer.setColor(238 / 255f, 238 / 255f, 238 / 255f, 1);
         shapeRenderer.rect(0, screenH*4/5, screenW, screenH / 5);
         shapeRenderer.setColor(150 / 255f, 40 / 2555f, 27 / 255f, 1);
@@ -153,8 +151,6 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
                 joints.remove(0);
             }
             buttonBodies.get(pressedButton).setFixedRotation(true);
-            buttonBodies.get(4).setFixedRotation(true);
-            buttonBodies.get(5).setFixedRotation(true);
             distanceJointDef.bodyA = platformBodies.get(0);
             distanceJointDef.bodyB = buttonBodies.get(pressedButton);
             distanceJointDef.length = (float) getDistance(distanceJointDef.bodyA.getPosition(), distanceJointDef.bodyB.getPosition());
@@ -236,7 +232,7 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
                 Button b = buttons.get(i);
                 Body d = buttonBodies.get(i);
                 if ((screenX < b.x + b.radius && screenX > b.x - b.radius) && (screenH - screenY < b.y + b.radius && screenH - screenY > b.y - b.radius)) {
-                    pressedButton = b.screen;
+                    pressedButton = b.target;
                 } else {
                     d.setFixedRotation(false);
                 }
@@ -374,6 +370,8 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
                     game.setScreen(new MainMenu(game));
                 } else {
                     settings = true;
+                    buttonBodies.get(4).setFixedRotation(true);
+                    buttonBodies.get(5).setFixedRotation(true);
                     ropeJointDef.maxLength = 4;
                     ropeJointDef.collideConnected = false;
                     ropeJointDef.bodyA = platformBodies.get(0);
