@@ -3,6 +3,8 @@ package com.tobytallis.stickygolf;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.Screen;
 
 public class Screens extends Game {
 
@@ -10,8 +12,10 @@ public class Screens extends Game {
     // that are then called from the classes using game.variable_name
 
     public int currLevel = 0;
+    public Preferences prefs;
 
     public void create() {
+        prefs = Gdx.app.getPreferences("Settings");
         this.setScreen(new MainMenu(this));
         Gdx.input.setCatchBackKey(true);
     }

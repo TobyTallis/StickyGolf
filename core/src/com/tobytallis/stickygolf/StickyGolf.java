@@ -203,12 +203,13 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         for (int i = 0; i < doors.size(); i++) {
             Door d = doors.get(i);
             Body b = doorBodies.get(i);
-            if (d.isOpen) {
+            if (d.justChanged) {
                 if (ropeJointDef.bodyA == b || ropeJointDef.bodyB == b) {
                     if (golfBallBody.getJointList().size > 0) {
                         world.destroyJoint(ropeJoint);
                     }
                 }
+                d.justChanged = false;
             }
             d.x = (double) ((PIXELS_TO_METRES * b.getPosition().x) - (d.width / 2));
             d.y = (double) ((PIXELS_TO_METRES * b.getPosition().y) - (d.height / 2));
@@ -483,17 +484,13 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         Vector2 worldCoords = getWorldCoords(new Vector2(screenX, Gdx.graphics.getHeight() - screenY));
         Vector2 golfBallCoords = new Vector2((float) golfBall.x, (float) golfBall.y);
         for (Switch s : switches) {
-            if (worldCoords.x >= s.x - s.size/2 && worldCoords.x <= s.x + s.size/2 && worldCoords.y >= s.y - s.size/2 && worldCoords.y <= s.y + s.size/2) {
-                double distance = getDistance(golfBallCoords, new Vector2((float) s.x, (float) s.y));
-                if (distance > 380) {
-                    System.out.println("tooooo far: " + distance);
-                } else {
-                    ballPressed = false;
-                    s.isPressed = !s.isPressed;
-                    for (Door d : links.get(s)) {
-                        d.isOpen = !d.isOpen;
-                        d.joint.setMotorSpeed(-d.joint.getMotorSpeed());
-                    }
+            if (worldCoords.x >= s.x - s.size/2 && worldCoords.x <= s.x + s.size/2 && worldCoords.y >= s.y - s.size/2 && worldCoords.y <= s.y + s.size/2 && golfBall.cameraFollow) {
+                ballPressed = false;
+                s.isPressed = !s.isPressed;
+                for (Door d : links.get(s)) {
+                    d.isOpen = !d.isOpen;
+                    d.justChanged = true;
+                    d.joint.setMotorSpeed(-d.joint.getMotorSpeed());
                 }
             }
         }
@@ -725,7 +722,7 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             prismaticJointDef.lowerTranslation = (float) -getDistance(doorHoldBody.getPosition(), doorBody.getPosition());
             prismaticJointDef.enableMotor = true;
             prismaticJointDef.motorSpeed = 10;
-            prismaticJointDef.maxMotorForce = 500;
+            prismaticJointDef.maxMotorForce = 50;
             d.joint = ((PrismaticJoint) world.createJoint(prismaticJointDef));
         }
 

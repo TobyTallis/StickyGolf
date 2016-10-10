@@ -19,6 +19,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -26,6 +27,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.physics.box2d.joints.PrismaticJoint;
 import com.badlogic.gdx.physics.box2d.joints.PrismaticJointDef;
+import com.badlogic.gdx.physics.box2d.joints.RopeJointDef;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 
 import java.util.ArrayList;
@@ -49,14 +51,21 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
     private Texture settingsButtonTexture;
     private Texture achievementsButtonTexture;
     private Texture purchaseButtonTexture;
+    private Texture soundButtonTexture;
+    private Texture vibrationButtonTexture;
+    private Texture soundButtonOffTexture;
+    private Texture vibrationButtonOffTexture;
     DistanceJointDef distanceJointDef = new DistanceJointDef();
     PrismaticJointDef prismaticJointDef = new PrismaticJointDef();
+    RopeJointDef ropeJointDef = new RopeJointDef();
     private ArrayList<Joint> joints = new ArrayList<Joint>();
     private ArrayList<Body> buttonBodies = new ArrayList<Body>();
     private ArrayList<Button> buttons = new ArrayList<Button>();
     private ArrayList<Body> platformBodies = new ArrayList<Body>();
     private ArrayList<Platform> platforms = new ArrayList<Platform>();
     private int pressedButton = -1;
+    private boolean settings = false;
+    Filter noCollisionFilter;
 
     public MainMenu(final Screens gam) {
         PIXELS_TO_METRES = 100;
@@ -74,6 +83,10 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
         settingsButtonTexture = new Texture(Gdx.files.internal("SettingsButton.png"));
         achievementsButtonTexture = new Texture(Gdx.files.internal("AchievementsButton.png"));
         purchaseButtonTexture = new Texture(Gdx.files.internal("PurchaseButton.png"));
+        soundButtonTexture = new Texture(Gdx.files.internal("SoundButton.png"));
+        vibrationButtonTexture = new Texture(Gdx.files.internal("VibrationButton.png"));
+        soundButtonOffTexture = new Texture(Gdx.files.internal("SoundButtonOff.png"));
+        vibrationButtonOffTexture = new Texture(Gdx.files.internal("VibrationButtonOff.png"));
     }
 
     public void create() {
@@ -108,13 +121,9 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
             float y = (float) b.y;
             shapeRenderer.circle(x + screenW / 20, y - screenH / 40, b.radius);
         }
-        shapeRenderer.setColor(150 / 255f, 40 / 2555f, 27 / 255f, 1);
-        for (Platform p : platforms) {
-            float x = (float) p.x;
-            float y = (float) p.y;
-            shapeRenderer.rect(x, y, p.width / 2, p.height / 2, p.width, p.height, 1, 1, p.angle);
-        }
         shapeRenderer.end();
+        buttons.get(4).texture = game.prefs.getBoolean("soundOn", true) ? soundButtonTexture : soundButtonOffTexture;
+        buttons.get(5).texture = game.prefs.getBoolean("vibrationOn", true) ? vibrationButtonTexture : vibrationButtonOffTexture;
         spriteBatch.begin();
         // font
         // buttons
@@ -127,19 +136,33 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
             spriteBatch.draw(b.texture, x - b.radius, y - b.radius, b.radius, b.radius, b.radius * 2, b.radius * 2, 1, 1, b.angle, 0, 0, 512, 512, false, false);
         }
         spriteBatch.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(238 / 255f, 238 / 255f, 238 / 255f, 1);
+        shapeRenderer.rect(0, screenH*4/5, screenW, screenH / 5);
+        shapeRenderer.setColor(150 / 255f, 40 / 2555f, 27 / 255f, 1);
+        for (Platform p : platforms) {
+            float x = (float) p.x;
+            float y = (float) p.y;
+            shapeRenderer.rect(x, y, p.width / 2, p.height / 2, p.width, p.height, 1, 1, p.angle);
+        }
+        shapeRenderer.end();
         //debugRenderer.render(world, debugMatrix);
-        if (pressedButton != -1 && world.getJointCount() > 1) {
+        if (pressedButton > -1 && pressedButton < 4 && world.getJointCount() > 1) {
             while (world.getJointCount() > 0) {
                 world.destroyJoint(joints.get(0));
                 joints.remove(0);
             }
-            distanceJointDef.bodyA = buttonBodies.get(pressedButton);
-            distanceJointDef.bodyB = platformBodies.get(0);
+            buttonBodies.get(pressedButton).setFixedRotation(true);
+            buttonBodies.get(4).setFixedRotation(true);
+            buttonBodies.get(5).setFixedRotation(true);
+            distanceJointDef.bodyA = platformBodies.get(0);
+            distanceJointDef.bodyB = buttonBodies.get(pressedButton);
             distanceJointDef.length = (float) getDistance(distanceJointDef.bodyA.getPosition(), distanceJointDef.bodyB.getPosition());
             joints.add(world.createJoint(distanceJointDef));
         }
         if (buttonBodies.get(1).getPosition().y < 0 || buttonBodies.get(3).getPosition().y < 0) {
             switchScreen();
+            pressedButton = -1;
         }
         //rayHandler.setCombinedMatrix(debugMatrix);
         //rayHandler.updateAndRender();
@@ -165,6 +188,8 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
         buttons.add(new Button(screenW/5 - 50, screenH/5, 100, 0, settingsButtonTexture, 1));
         buttons.add(new Button(screenW/2 - 50, screenH/6, 100, 0, achievementsButtonTexture, 2));
         buttons.add(new Button(screenW*4/5 - 50, screenH/5, 100, 0, purchaseButtonTexture, 3));
+        buttons.add(new Button(screenW/3 - 50, screenH*4/5, 100, 0, soundButtonTexture, 4));
+        buttons.add(new Button(screenW*2/3 - 50, screenH*4/5, 100, 0, vibrationButtonTexture, 5));
         initBox2DMenu();
     }
 
@@ -181,7 +206,7 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
     }
 
     public void hide() {
-
+        this.dispose();
     }
 
     public void dispose() {
@@ -207,9 +232,13 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
 
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (pressedButton == -1) {
-            for (Button b : buttons) {
+            for (int i = 0; i < buttons.size(); i++) {
+                Button b = buttons.get(i);
+                Body d = buttonBodies.get(i);
                 if ((screenX < b.x + b.radius && screenX > b.x - b.radius) && (screenH - screenY < b.y + b.radius && screenH - screenY > b.y - b.radius)) {
                     pressedButton = b.screen;
+                } else {
+                    d.setFixedRotation(false);
                 }
             }
         }
@@ -249,15 +278,7 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
         FixtureDef platformFixtureDef = new FixtureDef();
         platformFixtureDef.density = 1;
         platformFixtureDef.restitution = 0;
-/*        for (Platform p : platforms) {
-            platformBodyDef.position.set(((float) (p.x + ((double) (p.width / 2)))) / PIXELS_TO_METRES, ((float) (p.y + ((double) (p.height / 2)))) / PIXELS_TO_METRES);
-            Body platformBody = world.createBody(platformBodyDef);
-            platformShape.setAsBox(((float) (p.width / 2)) / PIXELS_TO_METRES, ((float) (p.height / 2)) / PIXELS_TO_METRES);
-            platformFixtureDef.shape = platformShape;
-            platformBody.createFixture(platformFixtureDef);
-            platformBody.setUserData(p);
-            platformBodies.add(platformBody);
-        }*/
+
         for (int i = 0; i < platforms.size(); i++) {
             Platform p = platforms.get(i);
             float w = p.width / PIXELS_TO_METRES;
@@ -267,13 +288,7 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
             Body platformBody = world.createBody(platformBodyDef);
             platformShape.setAsBox(w / 2, h / 2, new Vector2(0, 0), 0);
             platformFixtureDef.shape = platformShape;
-            //if (platforms.size() - i <= 4) {
-            //    platformFixtureDef.filter.maskBits = 0x0001 | 0x0002 | 0x0004;
-            //    platformBody.createFixture(platformFixtureDef);
-            //} else {
-            //    platformFixtureDef.filter.maskBits = -1;
             platformBody.createFixture(platformFixtureDef);
-            //}
             platformBody.setUserData(p);
             platformBodies.add(platformBody);
         }
@@ -282,6 +297,7 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
         BodyDef buttonBodyDef = new BodyDef();
         buttonBodyDef.type = BodyDef.BodyType.DynamicBody;
         buttonBodyDef.bullet = true;
+        buttonBodyDef.fixedRotation = true;
         CircleShape buttonShape = new CircleShape();
         FixtureDef buttonFixtureDef = new FixtureDef();
         buttonFixtureDef.density = 0.8f;
@@ -349,11 +365,26 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
     public void switchScreen() {
         switch (pressedButton) {
             case 0:
+                //play
                 game.setScreen(new StickyGolf(game));
                 break;
             case 1:
                 //settings
-                game.setScreen(new StickyGolf(game));
+                if (settings) {
+                    game.setScreen(new MainMenu(game));
+                } else {
+                    settings = true;
+                    ropeJointDef.maxLength = 4;
+                    ropeJointDef.collideConnected = false;
+                    ropeJointDef.bodyA = platformBodies.get(0);
+                    ropeJointDef.bodyB = buttonBodies.get(4);
+                    ropeJointDef.localAnchorA.set(new Vector2(-screenW / (6 * PIXELS_TO_METRES), 0));
+                    ropeJointDef.localAnchorB.set(new Vector2(0, 0));
+                    joints.add(world.createJoint(ropeJointDef));
+                    ropeJointDef.bodyB = buttonBodies.get(5);
+                    ropeJointDef.localAnchorA.set(new Vector2(screenW / (6 * PIXELS_TO_METRES), 0));
+                    joints.add(world.createJoint(ropeJointDef));
+                }
                 break;
             case 2:
                 //achievements
@@ -362,6 +393,16 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
             case 3:
                 //premium
                 game.setScreen(new StickyGolf(game));
+                break;
+            case 4:
+                //sound
+                game.prefs.putBoolean("soundOn", !game.prefs.getBoolean("soundOn", true));
+                game.prefs.flush();
+                break;
+            case 5:
+                //vibration
+                game.prefs.putBoolean("vibrationOn", !game.prefs.getBoolean("vibrationOn", true));
+                game.prefs.flush();
                 break;
             default:
                 break;

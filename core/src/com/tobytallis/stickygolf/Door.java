@@ -6,6 +6,7 @@ public class Door {
 
     boolean shadow;
     boolean isOpen = false;
+    boolean justChanged = false;
     int height;
     int width;
     // links to action (0 is no action)
