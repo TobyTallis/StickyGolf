@@ -98,8 +98,11 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
     private boolean slowmotion = false;
     private int applyForceCount = 0;
     private Vector2 desiredCameraCoords;
+    private Texture restartButtonTexture;
     private Texture lookButtonTexture;
+    private Texture lookButtonOffTexture;
     private Texture powerUpButtonTexture;
+    private Texture powerUpButtonOffTexture;
     private int pressedButton = -1;
 
     public StickyGolf(Screens gam) {
@@ -141,8 +144,11 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("Roboto-Black.ttf"));
         parameter.size = 40;
         boldText = fontGenerator.generateFont(parameter);
+        restartButtonTexture = new Texture(Gdx.files.internal("RestartButton.png"));
         lookButtonTexture = new Texture(Gdx.files.internal("LookButton.png"));
         powerUpButtonTexture = new Texture(Gdx.files.internal("PowerUpButton.png"));
+        lookButtonOffTexture = new Texture(Gdx.files.internal("LookButtonOff.png"));
+        powerUpButtonOffTexture = new Texture(Gdx.files.internal("PowerUpButtonOff.png"));
     }
 
     public void create() {
@@ -377,6 +383,8 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         }*/
         shapeRenderer.end();
         // draw UI elements
+        UIButtons.get(1).texture = golfBall.cameraFollow ? lookButtonTexture : lookButtonOffTexture;
+        UIButtons.get(2).texture = !slowmotion ? powerUpButtonTexture : powerUpButtonOffTexture;
         screenSpriteBatch.begin();
         for (Button b : UIButtons) {
             float x = (float) b.x;
@@ -420,8 +428,9 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         texts.clear();
         texts.addAll(Arrays.asList(currLevel.texts));
         UIButtons.clear();
-        UIButtons.add(new Button(50, screenH - 50, 50, 0, lookButtonTexture, 0));
-        UIButtons.add(new Button(150, screenH - 50, 50, 0, powerUpButtonTexture, 1));
+        UIButtons.add(new Button(screenW - 50, screenH - 50, 50, 0, restartButtonTexture, 0));
+        UIButtons.add(new Button(50, screenH - 50, 50, 0, lookButtonTexture, 1));
+        UIButtons.add(new Button(150, screenH - 50, 50, 0, powerUpButtonTexture, 2));
         trees.clear();
         for (Platform p : platforms) {
             for (int i = 0; i < p.trees.length; i += 3) {
@@ -456,8 +465,8 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
     }
 
     public void dispose() {
-        world.dispose();
         System.out.println("DISPOSING");
+        world.dispose();
         shapeRenderer.dispose();
         screenSpriteBatch.dispose();
         worldSpriteBatch.dispose();
@@ -503,11 +512,13 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
                     ballPressed = false;
                     switch (b.target) {
                         case 0:
-                            System.out.println("HOWDY");
+                            this.dispose();
+                            game.setScreen(new StickyGolf(game));
+                        case 1:
                             golfBall.cameraFollow = !golfBall.cameraFollow;
                             desiredCameraCoords = golfBallCoords;
                             break;
-                        case 1:
+                        case 2:
                             slowmotion = !slowmotion;
                             if (slowmotion) {
                                 step = 1 / 300f;
