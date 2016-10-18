@@ -163,6 +163,8 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             applyForceCount -= 1;
         }
         if (golfBall.cameraFollow) {
+            camera.viewportHeight = screenH;
+            camera.viewportWidth = screenW;
             camera.position.x += (((float) golfBall.x) - camera.position.x) / 10;
             camera.position.y += (((float) golfBall.y) - camera.position.y) / 10;
         } else {
@@ -503,10 +505,7 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
                 }
             }
         }
-        if (!golfBall.cameraFollow) {
-            desiredCameraCoords = worldCoords;
-        }
-        if (pressedButton == -1) {
+        if (pressedButton == -1 && ballPressed) {
             for (Button b : UIButtons) {
                 if ((screenX < b.x + b.radius && screenX > b.x - b.radius) && (screenH - screenY < b.y + b.radius && screenH - screenY > b.y - b.radius)) {
                     ballPressed = false;
@@ -532,13 +531,17 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
                 }
             }
         }
-        if (screenX > Gdx.graphics.getWidth() * 3 / 4) {
+        if (screenX > Gdx.graphics.getWidth() * 3 / 4 && !golfBall.cameraFollow && ballPressed) {
             ballPressed = false;
             zoomChange = true;
             originalZoomPoint = screenY;
         }
-        if (ballPressed && golfBall.cameraFollow) {
-            ballTouched = true;
+        if (ballPressed) {
+            if (golfBall.cameraFollow) {
+                ballTouched = true;
+            } else {
+                desiredCameraCoords = worldCoords;
+            }
         }
         return true;
     }
