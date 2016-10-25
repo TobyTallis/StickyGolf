@@ -13,6 +13,8 @@ public class Screens extends Game {
 
     public int currLevel = 0;
     public Preferences prefs;
+    public int shadowX = 36;
+    public int shadowY = 32;
 
     public void create() {
         prefs = Gdx.app.getPreferences("Settings");

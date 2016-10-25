@@ -144,11 +144,11 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("Roboto-Black.ttf"));
         parameter.size = 40;
         boldText = fontGenerator.generateFont(parameter);
-        restartButtonTexture = new Texture(Gdx.files.internal("RestartButton.png"));
-        lookButtonTexture = new Texture(Gdx.files.internal("LookButton.png"));
-        powerUpButtonTexture = new Texture(Gdx.files.internal("PowerUpButton.png"));
-        lookButtonOffTexture = new Texture(Gdx.files.internal("LookButtonOff.png"));
-        powerUpButtonOffTexture = new Texture(Gdx.files.internal("PowerUpButtonOff.png"));
+        restartButtonTexture = new Texture(Gdx.files.internal("RestartButton512.png"));
+        lookButtonTexture = new Texture(Gdx.files.internal("LookButton512.png"));
+        powerUpButtonTexture = new Texture(Gdx.files.internal("PowerUpButton144.png"));
+        lookButtonOffTexture = new Texture(Gdx.files.internal("LookButtonOff512.png"));
+        powerUpButtonOffTexture = new Texture(Gdx.files.internal("PowerUpButtonOff512.png"));
     }
 
     public void create() {
@@ -221,19 +221,19 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             float x = (float) d.x;
             float y = (float) d.y;
             if (d.shadow) {
-                shapeRenderer.rect(x + screenW / 20, y - screenH / 40, d.width / 2, d.height / 2, d.width, d.height, 1, 1, d.angle);
+                shapeRenderer.rect(x + game.shadowX, y - game.shadowY, d.width / 2, d.height / 2, d.width, d.height, 1, 1, d.angle);
             }
         }
         for (Platform p : platforms) {
             float x = (float) p.x;
             float y = (float) p.y;
             if (p.shadow) {
-                shapeRenderer.rect(x + screenW / 20, y - screenH / 40, p.width / 2, p.height / 2, p.width, p.height, 1, 1, p.angle);
+                shapeRenderer.rect(x + game.shadowX, y - game.shadowY, p.width / 2, p.height / 2, p.width, p.height, 1, 1, p.angle);
             }
             if (p.finalPlatform) {
-                shapeRenderer.rect(x + p.width/2 - 5 + screenW / 20, y + p.height - screenH / 40, 10, 60);
-                shapeRenderer.triangle(x + p.width / 2 + 5 + screenW / 20, y + p.height + 60 - screenH / 40, x + p.width / 2 + 5 + screenW / 20,
-                        y + p.height + 80 - screenH / 40, x + p.width / 2 - 45 + screenW / 20, y + p.height + 60 - screenH / 40);
+                shapeRenderer.rect(x + p.width/2 - 5 + game.shadowX, y + p.height - game.shadowY, 10, 60);
+                shapeRenderer.triangle(x + p.width / 2 + 5 + game.shadowX, y + p.height + 60 - game.shadowY, x + p.width / 2 + 5 + game.shadowX,
+                        y + p.height + 80 - game.shadowY, x + p.width / 2 - 45 + game.shadowX, y + p.height + 60 - game.shadowY);
             }
         }
         for (int i = 0; i < movingPlatforms.size(); i++) {
@@ -248,20 +248,20 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             }
             if (m.shadow) {
                 if (m.shape == 1) {
-                    shapeRenderer.rect(x + screenW / 20, y - screenH / 40, m.width / 2, m.height / 2, m.width, m.height, 1, 1, m.angle);
+                    shapeRenderer.rect(x + game.shadowX, y - game.shadowY, m.width / 2, m.height / 2, m.width, m.height, 1, 1, m.angle);
                 } else if (m.shape == 2) {
-                    shapeRenderer.rect(x + m.width - m.height / 3 + screenW / 20, y + m.height * 2 / 3 - screenH / 40, m.height / 3 - m.width / 2, -m.height / 6, m.height / 3, m.height / 3, 1, 1, m.angle);
-                    shapeRenderer.rect(x + screenW / 20, y + m.height * 2 / 3 - screenH / 40, m.width / 2, -m.height / 6, m.height / 3, m.height / 3, 1, 1, m.angle);
-                    shapeRenderer.rect(x + screenW / 20, y - screenH / 40, m.width / 2, m.height / 2, m.width, m.height * 2 / 3, 1, 1, m.angle);
+                    shapeRenderer.rect(x + m.width - m.height / 3 + game.shadowX, y + m.height * 2 / 3 - game.shadowY, m.height / 3 - m.width / 2, -m.height / 6, m.height / 3, m.height / 3, 1, 1, m.angle);
+                    shapeRenderer.rect(x + game.shadowX, y + m.height * 2 / 3 - game.shadowY, m.width / 2, -m.height / 6, m.height / 3, m.height / 3, 1, 1, m.angle);
+                    shapeRenderer.rect(x + game.shadowX, y - game.shadowY, m.width / 2, m.height / 2, m.width, m.height * 2 / 3, 1, 1, m.angle);
                 }
             }
         }
         for (Tree t : trees) {
             float x = (float) t.x;
             float y = (float) t.y;
-            shapeRenderer.rect(x - t.size / 24 + screenW / 20, y - screenH / 40, t.size / 12, t.size / 10);
-            shapeRenderer.triangle(x - t.size / 2 + screenW / 20, y + t.size / 10 - screenH / 40, x + t.size / 2 + screenW / 20,
-                    y + t.size / 10 - screenH / 40, x + screenW / 20, y + t.size - screenH / 40);
+            shapeRenderer.rect(x - t.size / 24 + game.shadowX, y - game.shadowY, t.size / 12, t.size / 10);
+            shapeRenderer.triangle(x - t.size / 2 + game.shadowX, y + t.size / 10 - game.shadowY, x + t.size / 2 + game.shadowX,
+                    y + t.size / 10 - game.shadowY, x + game.shadowX, y + t.size - game.shadowY);
         }
         for (int i = 0; i < boxes.size(); i++) {
             Box b = boxes.get(i);
@@ -271,9 +271,9 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             float x = (float) b.x;
             float y = (float) b.y;
             b.angle = (float) (((d.getAngle() * 180)) / Math.PI) % 360;
-            shapeRenderer.rect(x + screenW / 20, y - screenH / 40, (b.width / 2), (b.height / 2), b.width, b.height, 1, 1, b.angle);
+            shapeRenderer.rect(x + game.shadowX, y - game.shadowY, (b.width / 2), (b.height / 2), b.width, b.height, 1, 1, b.angle);
         }
-        shapeRenderer.circle((float) golfBall.x + screenW / 20, (float) golfBall.y - screenH / 40, ((golfBall.width * 2) / 3));
+        shapeRenderer.circle((float) golfBall.x + game.shadowX, (float) golfBall.y - game.shadowY, ((golfBall.width * 2) / 3));
         shapeRenderer.end();
         // draw background font
         worldSpriteBatch.begin();
@@ -391,7 +391,7 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         for (Button b : UIButtons) {
             float x = (float) b.x;
             float y = (float) b.y;
-            screenSpriteBatch.draw(b.texture, x - b.radius, y - b.radius, b.radius, b.radius, b.radius * 2, b.radius * 2, 1, 1, b.angle, 0, 0, 512, 512, false, false);
+            screenSpriteBatch.draw(b.texture, x - b.radius, y - b.radius, b.radius, b.radius, b.radius * 2, b.radius * 2, 1, 1, b.angle, 0, 0, b.texture.getWidth(), b.texture.getHeight(), false, false);
         }
         screenSpriteBatch.end();
         //lights.get(0).setPosition(golfBallBody.getPosition());
@@ -414,8 +414,8 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         worldW = currLevel.width;
         golfBall.x = currLevel.startX;
         golfBall.y = currLevel.startY;
-        golfBall.width = screenW / 20;
-        golfBall.height = screenW / 20;
+        golfBall.width = 36;
+        golfBall.height = 36;
         platforms.clear();
         platforms.addAll(Arrays.asList(currLevel.platforms));
         doors.clear();

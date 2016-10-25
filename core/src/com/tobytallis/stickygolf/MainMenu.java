@@ -77,14 +77,14 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
         font = fontGenerator.generateFont(parameter);
         font.setColor(Color.WHITE);
         shapeRenderer = new ShapeRenderer();
-        playButtonTexture = new Texture(Gdx.files.internal("PlayButton.png"));
-        settingsButtonTexture = new Texture(Gdx.files.internal("SettingsButton.png"));
-        achievementsButtonTexture = new Texture(Gdx.files.internal("AchievementsButton.png"));
-        purchaseButtonTexture = new Texture(Gdx.files.internal("PurchaseButton.png"));
-        soundButtonTexture = new Texture(Gdx.files.internal("SoundButton.png"));
-        vibrationButtonTexture = new Texture(Gdx.files.internal("VibrationButton.png"));
-        soundButtonOffTexture = new Texture(Gdx.files.internal("SoundButtonOff.png"));
-        vibrationButtonOffTexture = new Texture(Gdx.files.internal("VibrationButtonOff.png"));
+        playButtonTexture = new Texture(Gdx.files.internal("PlayButton512.png"));
+        settingsButtonTexture = new Texture(Gdx.files.internal("SettingsButton512.png"));
+        achievementsButtonTexture = new Texture(Gdx.files.internal("AchievementsButton512.png"));
+        purchaseButtonTexture = new Texture(Gdx.files.internal("PurchaseButton512.png"));
+        soundButtonTexture = new Texture(Gdx.files.internal("SoundButton512.png"));
+        vibrationButtonTexture = new Texture(Gdx.files.internal("VibrationButton512.png"));
+        soundButtonOffTexture = new Texture(Gdx.files.internal("SoundButtonOff512.png"));
+        vibrationButtonOffTexture = new Texture(Gdx.files.internal("VibrationButtonOff512.png"));
     }
 
     public void create() {
@@ -100,7 +100,7 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
         camera.update();
         world.step(1 / 60f, 6, 2);
         debugMatrix = new Matrix4(camera.combined);
-        debugMatrix.scale(100.0f, 100.0f, 1.0f);
+        debugMatrix.scale(PIXELS_TO_METRES, PIXELS_TO_METRES, 1);
         Gdx.gl.glClear(16640);
         Gdx.gl.glClearColor(150 / 255f, 40 / 255f, 27 / 255f, 1);
         Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -117,7 +117,7 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
             b.y = (double) (PIXELS_TO_METRES * d.getPosition().y);
             float x = (float) b.x;
             float y = (float) b.y;
-            shapeRenderer.circle(x + screenW / 20, y - screenH / 40, b.radius);
+            shapeRenderer.circle(x + game.shadowX, y - game.shadowX, b.radius);
         }
         shapeRenderer.end();
         buttons.get(4).texture = game.prefs.getBoolean("soundOn", true) ? soundButtonTexture : soundButtonOffTexture;
@@ -131,7 +131,7 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
             float x = (float) b.x;
             float y = (float) b.y;
             b.angle = (float) (((d.getAngle() * 180)) / Math.PI) % 360;
-            spriteBatch.draw(b.texture, x - b.radius, y - b.radius, b.radius, b.radius, b.radius * 2, b.radius * 2, 1, 1, b.angle, 0, 0, 512, 512, false, false);
+            spriteBatch.draw(b.texture, x - b.radius, y - b.radius, b.radius, b.radius, b.radius * 2, b.radius * 2, 1, 1, b.angle, 0, 0, b.texture.getWidth(), b.texture.getHeight(), false, false);
         }
         spriteBatch.end();
         shapeRenderer.begin(ShapeType.Filled);
@@ -171,21 +171,21 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
         screenW = 720;
         platforms.clear();
         platformBodies.clear();
-        platforms.add(new Platform(screenW / 40, screenH*4/5, screenW * 19 / 20, 30));
-        platforms.add(new Platform(0, 0, screenW / 40, screenH));
-        platforms.add(new Platform(screenW * 39 / 40, 0, screenW / 40, screenH));
-        platforms.add(new Platform(screenW / 40, screenH * 79 / 80, screenW * 19 / 20, screenH / 80));
-        platforms.add(new Platform(screenW / 40, screenH / 6, 30, 30));
-        platforms.add(new Platform(screenW * 39 / 40 - 30, screenH / 6, 30, 30));
+        platforms.add(new Platform(18, 1024, screenW * 19 / 20, 30));
+        platforms.add(new Platform(0, 0, 18, 1280));
+        platforms.add(new Platform(702, 0, 18, 1280));
+        platforms.add(new Platform(18, 1264, screenW * 19 / 20, 16));
+        platforms.add(new Platform(18, 213, 30, 30));
+        platforms.add(new Platform(702 - 30, 213, 30, 30));
         buttons.clear();
         joints.clear();
         buttonBodies.clear();
-        buttons.add(new Button(screenW/2 - 100, screenH/2, 200, 0, playButtonTexture, 0));
-        buttons.add(new Button(screenW/5 - 50, screenH/5, 100, 0, settingsButtonTexture, 1));
-        buttons.add(new Button(screenW/2 - 50, screenH/6, 100, 0, achievementsButtonTexture, 2));
-        buttons.add(new Button(screenW*4/5 - 50, screenH/5, 100, 0, purchaseButtonTexture, 3));
-        buttons.add(new Button(screenW/3 - 50, screenH*4/5, 100, 0, soundButtonTexture, 4));
-        buttons.add(new Button(screenW*2/3 - 50, screenH*4/5, 100, 0, vibrationButtonTexture, 5));
+        buttons.add(new Button(screenW/2 - 100, 640, 200, 0, playButtonTexture, 0));
+        buttons.add(new Button(screenW/5 - 50, 256, 100, 0, settingsButtonTexture, 1));
+        buttons.add(new Button(screenW/2 - 50, 213, 100, 0, achievementsButtonTexture, 2));
+        buttons.add(new Button(screenW*4/5 - 50, 256, 100, 0, purchaseButtonTexture, 3));
+        buttons.add(new Button(screenW/3 - 50, 1024, 100, 0, soundButtonTexture, 4));
+        buttons.add(new Button(screenW*2/3 - 50, 1024, 100, 0, vibrationButtonTexture, 5));
         initBox2DMenu();
     }
 
