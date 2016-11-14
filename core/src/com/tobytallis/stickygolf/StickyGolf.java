@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
@@ -40,25 +39,25 @@ import java.util.HashMap;
 
 public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
 
-    final float PIXELS_TO_METRES;
-    public boolean ballTouched;
-    OrthographicCamera camera;
+    private final float PIXELS_TO_METRES;
+    private boolean ballTouched;
+    private OrthographicCamera camera;
     private Color[] colours;
-    Matrix4 debugMatrix;
-    Matrix4 screenMatrix;
-    Box2DDebugRenderer debugRenderer;
-    public boolean drawTrajectory;
-    float forceX;
-    float forceY;
-    final Screens game;
-    GolfBall golfBall;
-    Body golfBallBody;
-    Level currLevel;
-    MovingPlatform mPlatform001 = new MovingPlatform(1300, 400, 2000, 800, 200, 60, 5);
-    Level level00 = new Level(0, 4000, 8000, 300, 400, new Platform[]{new Platform(500, 1200, 300, 60, new int[]{180, 9, 230}), new Platform(1600, 1800, 600, 60, new int[]{430, 8, 200}), new Platform(1100, 200, 60, 600), new Platform(3300, 600, 300, 60, new int[]{50, 3, 170, 200, 1, 200}), new Platform(3300, 1000, 700, 60, new int[]{550, 5, 180}), new Platform(2800, 1200, 100, 60, 0, true, new int[0], 0, true), new Platform(2800, 200, 900, 60, new int[]{300, 12, 220, 700, 2, 180}), new Platform(100, 4000, 3900, 60, new int[]{100, 0, 100, 200, 1, 100, 300, 2, 100, 400, 3, 100, 500, 4, 100, 600, 5, 100, 700, 6, 100, 800, 7, 100, 900, 8, 100, 1000, 9, 100, 1100, 10, 100, 1200, 11, 100, 1300, 12, 100, 1400, 13, 100, 1500, 14, 100, 1600, 15, 100, 1700, 16, 100, 1800, 17, 100, 1900, 18, 100, 2000, 19, 100, 2100, 20, 100, 2200, 21, 100, 2300, 22, 100, 2400, 23, 100, 2500, 24, 100, 2600, 25, 100, 2700, 26, 100}), new Platform(0, 0, 4000, 60, 0, false, new int[]{200, 2, 220, 800, 4, 140, 2400, 11, 230}, 0, false), new Platform(0, 0, 60, 8000, false), new Platform(3940, 0, 60, 8000, false), new Platform(0, 7940, 4000, 60, false), new Platform(300, 6000, 600, 60, 20, true, new int[0], 0, false)}, new Box[]{new Box(500, 300, 50, 50, 0), new Box(600, 300, 50, 50, 0), new Box(500, 380, 50, 50, 0), new Box(2400, 6060, 50, 50, 0), new Box(600, 6100, 50, 50, 0), new Box(700, 300, 50, 50, 0)}, new Switch[]{new Switch(1650, 1900, 60, 1), new Switch(800, 400, 60, 1), new Switch(300, 1600, 60, 2), new Switch(2300, 6300, 60, 3)}, new Door[]{new Door(1115, 60, 1115, 200, 30, 140, 1), new Door(500, 1800, 500, 2200, 30, 400, 2)}, new MovingPlatform[]{new MovingPlatform(600, 5000, 2800, 5000, 200, 60, 5, 2), mPlatform001, new MovingPlatform(400, 7000, 1600, 6200, 200, 60, 3, 30, 2, true, new int[0], true, 0)}, new Text[]{new Text(2, "World 0, Level 0", 200, 400), new Text(1, "this is a", 670, 500), new Text(2, "switch", 670, 470), new Text(1, "it opens", 920, 200), new Text(1, "this", 920, 170), new Text(2, "door", 967, 170), new Text(1, "this", 0, 200, mPlatform001), new Text(2, "platform", 45, 201, mPlatform001), new Text(1, "moves", 30, 170, mPlatform001)});
-    Box box111 = new Box(625, 630, 50, 50, 0);
-    Level level11 = new Level(1, 1000, 1000, 100, 200, new Platform[]{new Platform(-60, -60, 1120, 60, false), new Platform(-60, 0, 60, 1000, false), new Platform(1000, 0, 60, 1000, false), new Platform(-60, 1000, 1120, 60, false), new Platform(-60, 100, 360, 60), new Platform(300, 500, 100, 60), new Platform(450, 550, 100, 60), new Platform(600, 600, 100, 60), new Platform(800, 700, 200, 60), new Platform(801, 760, 198, 1, 0, true, new int[0], 0, true), new Platform(200, 500, 60, 300)}, new Box[]{box111, new Box(710, 300, 150, 80, 0)}, new Switch[]{new Switch(300, 800, 60, 1, false)}, new Door[]{new Door(770, 700, 770, 1000, 30, 300, 1)}, new MovingPlatform[0], new Text[]{new Text(2, "World 1, Level 1", 20, 40), new Text(1, "this", -30, 50, box111), new Text(2, "box", -10, 47, null, box111), new Text(1, "looks fun", -30, 20, box111)});
-    Level level12 = new Level(1, 3000, 3000, 100, 200, new Platform[]{new Platform(-60, -60, 3120, 60, false), new Platform(-60, 0, 60, 3000, false), new Platform(3000, 0, 60, 3000, false), new Platform(-60, 3000, 3120, 60, false), new Platform(-60, 970, 2060, 60), new Platform(1000, 1970, 2000, 60), new Platform(2700, 2030, 200, 1, 0, true, new int[0], 0, true)}, new Box[]{new Box(200, 300, 50, 50, 0), new Box(1470, 0, 60, 950, 0), new Box(1470, 1030, 60, 900, 0)}, new Switch[0], new Door[0], new MovingPlatform[]{new MovingPlatform(2700, 300, 2700, 1700, 180, 60, 6), new MovingPlatform(120, 1330, 120, 2730, 180, 60, 6)}, new Text[]{new Text(2, "World 1, Level 2", 300, 400)});
+    private Matrix4 debugMatrix;
+    private Matrix4 screenMatrix;
+    private Box2DDebugRenderer debugRenderer;
+    private boolean drawTrajectory;
+    private float forceX;
+    private float forceY;
+    private final Screens game;
+    private GolfBall golfBall;
+    private Body golfBallBody;
+    private Level currLevel;
+    private MovingPlatform mPlatform001 = new MovingPlatform(1300, 400, 2000, 800, 200, 60, 5);
+    private Level level00 = new Level(0, 4000, 8000, 300, 400, new Platform[]{new Platform(500, 1200, 300, 60, new int[]{180, 9, 230}), new Platform(1600, 1800, 600, 60, new int[]{430, 8, 200}), new Platform(1100, 200, 60, 600), new Platform(3300, 600, 300, 60, new int[]{50, 3, 170, 200, 1, 200}), new Platform(3300, 1000, 700, 60, new int[]{550, 5, 180}), new Platform(2800, 1200, 100, 60, 0, true, new int[0], 0, true), new Platform(2800, 200, 900, 60, new int[]{300, 12, 220, 700, 2, 180}), new Platform(100, 4000, 3900, 60, new int[]{100, 0, 100, 200, 1, 100, 300, 2, 100, 400, 3, 100, 500, 4, 100, 600, 5, 100, 700, 6, 100, 800, 7, 100, 900, 8, 100, 1000, 9, 100, 1100, 10, 100, 1200, 11, 100, 1300, 12, 100, 1400, 13, 100, 1500, 14, 100, 1600, 15, 100, 1700, 16, 100, 1800, 17, 100, 1900, 18, 100, 2000, 19, 100, 2100, 20, 100, 2200, 21, 100, 2300, 22, 100, 2400, 23, 100, 2500, 24, 100, 2600, 25, 100, 2700, 26, 100}), new Platform(0, 0, 4000, 60, 0, false, new int[]{200, 2, 220, 800, 4, 140, 2400, 11, 230}, 0, false), new Platform(0, 0, 60, 8000, false), new Platform(3940, 0, 60, 8000, false), new Platform(0, 7940, 4000, 60, false), new Platform(300, 6000, 600, 60, 20, true, new int[0], 0, false)}, new Box[]{new Box(500, 300, 50, 50, 0), new Box(600, 300, 50, 50, 0), new Box(500, 380, 50, 50, 0), new Box(2400, 6060, 50, 50, 0), new Box(600, 6100, 50, 50, 0), new Box(700, 300, 50, 50, 0)}, new Switch[]{new Switch(1650, 1900, 60, 1), new Switch(800, 400, 60, 1), new Switch(300, 1600, 60, 2), new Switch(2300, 6300, 60, 3)}, new Door[]{new Door(1115, 60, 1115, 200, 30, 140, 1), new Door(500, 1800, 500, 2200, 30, 400, 2)}, new MovingPlatform[]{new MovingPlatform(600, 5000, 2800, 5000, 200, 60, 5, 2), mPlatform001, new MovingPlatform(400, 7000, 1600, 6200, 200, 60, 3, 30, 2, true, new int[0], true, 0)}, new Text[]{new Text(2, "World 0, Level 0", 200, 400), new Text(1, "this is a", 670, 500), new Text(2, "switch", 670, 470), new Text(1, "it opens", 920, 200), new Text(1, "this", 920, 170), new Text(2, "door", 967, 170), new Text(1, "this", 0, 200, mPlatform001), new Text(2, "platform", 45, 201, mPlatform001), new Text(1, "moves", 30, 170, mPlatform001)});
+    private Box box111 = new Box(625, 630, 50, 50, 0);
+    private Level level11 = new Level(1, 1000, 1000, 100, 200, new Platform[]{new Platform(-60, -60, 1120, 60, false), new Platform(-60, 0, 60, 1000, false), new Platform(1000, 0, 60, 1000, false), new Platform(-60, 1000, 1120, 60, false), new Platform(-60, 100, 360, 60), new Platform(300, 500, 100, 60), new Platform(450, 550, 100, 60), new Platform(600, 600, 100, 60), new Platform(800, 700, 200, 60), new Platform(801, 760, 198, 1, 0, true, new int[0], 0, true), new Platform(200, 500, 60, 300)}, new Box[]{box111, new Box(710, 300, 150, 80, 0)}, new Switch[]{new Switch(300, 800, 60, 1, false)}, new Door[]{new Door(770, 700, 770, 1000, 30, 300, 1)}, new MovingPlatform[0], new Text[]{new Text(2, "World 1, Level 1", 20, 40), new Text(1, "this", -30, 50, box111), new Text(2, "box", -10, 47, null, box111), new Text(1, "looks fun", -30, 20, box111)});
+    private Level level12 = new Level(1, 3000, 3000, 100, 200, new Platform[]{new Platform(-60, -60, 3120, 60, false), new Platform(-60, 0, 60, 3000, false), new Platform(3000, 0, 60, 3000, false), new Platform(-60, 3000, 3120, 60, false), new Platform(-60, 970, 2060, 60), new Platform(1000, 1970, 2000, 60), new Platform(2700, 2030, 200, 1, 0, true, new int[0], 0, true)}, new Box[]{new Box(200, 300, 50, 50, 0), new Box(1470, 0, 60, 950, 0), new Box(1470, 1030, 60, 900, 0)}, new Switch[0], new Door[0], new MovingPlatform[]{new MovingPlatform(2700, 300, 2700, 1700, 180, 60, 6), new MovingPlatform(120, 1330, 120, 2730, 180, 60, 6)}, new Text[]{new Text(2, "World 1, Level 2", 300, 400)});
     private Level[] levels = new Level[]{level00, level11, level12};
     private int originalZoomPoint;
     private ArrayList<Body> platformBodies = new ArrayList<Body>();
@@ -77,23 +76,23 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
     private int screenH;
     private int screenW;
     private ShapeRenderer shapeRenderer;
-    SpriteBatch worldSpriteBatch;
-    SpriteBatch screenSpriteBatch;
-    public boolean stopMovement;
-    World world;
+    private SpriteBatch worldSpriteBatch;
+    private SpriteBatch screenSpriteBatch;
+    private boolean stopMovement;
+    private World world;
     private int worldH;
     private int worldW;
-    public boolean zoomChange;
-    private BitmapFont defaultText;
-    private BitmapFont thinText;
-    private BitmapFont boldText;
+    private boolean zoomChange;
+    private BitmapFont defaultFont;
+    private BitmapFont thinFont;
+    private BitmapFont boldFont;
     private Joint ropeJoint;
-    RopeJointDef ropeJointDef = new RopeJointDef();
+    private RopeJointDef ropeJointDef = new RopeJointDef();
     private ArrayList<PrismaticJoint> doorJoints = new ArrayList<PrismaticJoint>();
-    PrismaticJointDef prismaticJointDef = new PrismaticJointDef();
-    Filter platformFilter;
-    Filter noCollisionFilter;
-    Filter doorFilter;
+    private PrismaticJointDef prismaticJointDef = new PrismaticJointDef();
+    private Filter platformFilter;
+    private Filter noCollisionFilter;
+    private Filter doorFilter;
     private float step = 1/60f;
     private boolean slowmotion = false;
     private int applyForceCount = 0;
@@ -103,9 +102,12 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
     private Texture lookButtonOffTexture;
     private Texture powerUpButtonTexture;
     private Texture powerUpButtonOffTexture;
+    private Texture golfBallTexture;
     private int pressedButton = -1;
+    private boolean changeLevel = false;
 
     public StickyGolf(Screens gam) {
+        game = gam;
         originalZoomPoint = 0;
         ballTouched = false;
         drawTrajectory = false;
@@ -128,33 +130,31 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
                 new Color(247 / 255f, 202 / 255f, 24 / 255f, 1), new Color(244 / 255f, 208 / 255f, 63 / 255f, 1),
                 new Color(245 / 255f, 215 / 255f, 110 / 255f, 1)};
         PIXELS_TO_METRES = 100;
-        game = gam;
         currLevel = levels[game.currLevel];
         Gdx.input.setInputProcessor(this);
         worldSpriteBatch = new SpriteBatch();
         screenSpriteBatch = new SpriteBatch();
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.color = Color.BLACK;
-        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("Roboto-Medium.ttf"));
-        parameter.size = 30;
-        defaultText = fontGenerator.generateFont(parameter);
-        fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("Roboto-Thin.ttf"));
-        parameter.size = 25;
-        thinText = fontGenerator.generateFont(parameter);
-        fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("Roboto-Black.ttf"));
-        parameter.size = 40;
-        boldText = fontGenerator.generateFont(parameter);
-        restartButtonTexture = new Texture(Gdx.files.internal("RestartButton512.png"));
-        lookButtonTexture = new Texture(Gdx.files.internal("LookButton512.png"));
-        powerUpButtonTexture = new Texture(Gdx.files.internal("PowerUpButton144.png"));
-        lookButtonOffTexture = new Texture(Gdx.files.internal("LookButtonOff512.png"));
-        powerUpButtonOffTexture = new Texture(Gdx.files.internal("PowerUpButtonOff512.png"));
+        System.out.println("LOADING FONTS");
+        defaultFont = game.assetManager.get("Roboto-Medium.ttf", BitmapFont.class);
+        thinFont = game.assetManager.get("Roboto-Thin.ttf", BitmapFont.class);
+        boldFont = game.assetManager.get("Roboto-Black.ttf", BitmapFont.class);
+        System.out.println("LOADING TEXTURES");
+        golfBallTexture = game.assetManager.get("GolfBall512.png", Texture.class);
+        lookButtonTexture = game.assetManager.get("LookButton512.png", Texture.class);
+        lookButtonOffTexture = game.assetManager.get("LookButtonOff512.png", Texture.class);
+        powerUpButtonTexture = game.assetManager.get("PowerUpButton512.png", Texture.class);
+        powerUpButtonOffTexture = game.assetManager.get("PowerUpButtonOff512.png", Texture.class);
+        restartButtonTexture = game.assetManager.get("RestartButton512.png", Texture.class);
+        //restartButtonTexture = new Texture(Gdx.files.internal("RestartButton512.png"), true);
+        //restartButtonTexture.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        System.out.println("LOADED");
     }
 
     public void create() {
     }
 
     public void show() {
+        System.out.println("SHOWN");
     }
 
     public void render(float delta) {
@@ -165,8 +165,8 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         if (golfBall.cameraFollow) {
             camera.viewportHeight = screenH;
             camera.viewportWidth = screenW;
-            camera.position.x += (((float) golfBall.x) - camera.position.x) / 10;
-            camera.position.y += (((float) golfBall.y) - camera.position.y) / 10;
+            camera.position.x += ((golfBall.x) - camera.position.x) / 10;
+            camera.position.y += ((golfBall.y) - camera.position.y) / 10;
         } else {
             desiredCameraCoords.x = Math.min(Math.max(desiredCameraCoords.x, 0), worldW);
             desiredCameraCoords.y = Math.min(Math.max(desiredCameraCoords.y, 0), worldH);
@@ -185,8 +185,8 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             golfBall.airHits = 0;
             stopMovement = false;
         }
-        golfBall.x = (double) (golfBallBody.getPosition().x * PIXELS_TO_METRES);
-        golfBall.y = (double) (golfBallBody.getPosition().y * PIXELS_TO_METRES);
+        golfBall.x = (golfBallBody.getPosition().x * PIXELS_TO_METRES);
+        golfBall.y = (golfBallBody.getPosition().y * PIXELS_TO_METRES);
         Gdx.gl.glClear(16640);
         Gdx.gl.glClearColor(150 / 255f, 40 / 255f, 27 / 255f, 1);
         Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -216,17 +216,17 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
                 }
                 d.justChanged = false;
             }
-            d.x = (double) ((PIXELS_TO_METRES * b.getPosition().x) - (d.width / 2));
-            d.y = (double) ((PIXELS_TO_METRES * b.getPosition().y) - (d.height / 2));
-            float x = (float) d.x;
-            float y = (float) d.y;
+            d.x = ((PIXELS_TO_METRES * b.getPosition().x) - (d.width / 2));
+            d.y = ((PIXELS_TO_METRES * b.getPosition().y) - (d.height / 2));
+            float x = d.x;
+            float y = d.y;
             if (d.shadow) {
                 shapeRenderer.rect(x + game.shadowX, y - game.shadowY, d.width / 2, d.height / 2, d.width, d.height, 1, 1, d.angle);
             }
         }
         for (Platform p : platforms) {
-            float x = (float) p.x;
-            float y = (float) p.y;
+            float x = p.x;
+            float y = p.y;
             if (p.shadow) {
                 shapeRenderer.rect(x + game.shadowX, y - game.shadowY, p.width / 2, p.height / 2, p.width, p.height, 1, 1, p.angle);
             }
@@ -239,10 +239,10 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         for (int i = 0; i < movingPlatforms.size(); i++) {
             MovingPlatform m = movingPlatforms.get(i);
             Body d = movingPlatformBodies.get(i);
-            m.x = (double) ((PIXELS_TO_METRES * d.getPosition().x) - (m.width / 2));
-            m.y = (double) ((PIXELS_TO_METRES * d.getPosition().y) - (m.height / 2));
-            float x = (float) m.x;
-            float y = (float) m.y;
+            m.x = ((PIXELS_TO_METRES * d.getPosition().x) - (m.width / 2));
+            m.y = ((PIXELS_TO_METRES * d.getPosition().y) - (m.height / 2));
+            float x = m.x;
+            float y = m.y;
             if ((m.startX == m.endX && (y >= m.endY || y <= m.startY)) || (m.startX != m.endX && (x >= m.endX || x <= m.startX))) {
                 d.setLinearVelocity(d.getLinearVelocity().scl(-1));
             }
@@ -257,8 +257,8 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             }
         }
         for (Tree t : trees) {
-            float x = (float) t.x;
-            float y = (float) t.y;
+            float x = t.x;
+            float y = t.y;
             shapeRenderer.rect(x - t.size / 24 + game.shadowX, y - game.shadowY, t.size / 12, t.size / 10);
             shapeRenderer.triangle(x - t.size / 2 + game.shadowX, y + t.size / 10 - game.shadowY, x + t.size / 2 + game.shadowX,
                     y + t.size / 10 - game.shadowY, x + game.shadowX, y + t.size - game.shadowY);
@@ -266,21 +266,21 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         for (int i = 0; i < boxes.size(); i++) {
             Box b = boxes.get(i);
             Body d = boxBodies.get(i);
-            b.x = (double) ((PIXELS_TO_METRES * d.getPosition().x) - (b.width / 2));
-            b.y = (double) ((PIXELS_TO_METRES * d.getPosition().y) - (b.height / 2));
-            float x = (float) b.x;
-            float y = (float) b.y;
+            b.x = ((PIXELS_TO_METRES * d.getPosition().x) - (b.width / 2));
+            b.y = ((PIXELS_TO_METRES * d.getPosition().y) - (b.height / 2));
+            float x = b.x;
+            float y = b.y;
             b.angle = (float) (((d.getAngle() * 180)) / Math.PI) % 360;
             shapeRenderer.rect(x + game.shadowX, y - game.shadowY, (b.width / 2), (b.height / 2), b.width, b.height, 1, 1, b.angle);
         }
-        shapeRenderer.circle((float) golfBall.x + game.shadowX, (float) golfBall.y - game.shadowY, ((golfBall.width * 2) / 3));
+        shapeRenderer.circle(golfBall.x + game.shadowX, golfBall.y - game.shadowY, ((golfBall.radius * 4) / 3));
         shapeRenderer.end();
         // draw background font
         worldSpriteBatch.begin();
         worldSpriteBatch.setProjectionMatrix(camera.combined);
         for (Text t : texts) {
-            int x = t.x;
-            int y = t.y;
+            float x = t.x;
+            float y = t.y;
             if (t.platformToFollow != null) {
                 x += t.platformToFollow.x;
                 y += t.platformToFollow.y;
@@ -289,19 +289,19 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
                 y += t.boxToFollow.y;
             }
             if (t.font == 1) {
-                thinText.draw(worldSpriteBatch, t.text, x, y);
+                thinFont.draw(worldSpriteBatch, t.text, x, y);
             } else if (t.font == 2) {
-                defaultText.draw(worldSpriteBatch, t.text, x, y);
+                defaultFont.draw(worldSpriteBatch, t.text, x, y);
             } else if (t.font == 3) {
-                boldText.draw(worldSpriteBatch, t.text, x, y);
+                boldFont.draw(worldSpriteBatch, t.text, x, y);
             }
         }
         worldSpriteBatch.end();
         // draw background objects
         shapeRenderer.begin(ShapeType.Filled);
         for (Switch s : switches) {
-            float x = (float) s.x - s.size/2;
-            float y = (float) s.y - s.size/2;
+            float x = s.x - s.size/2;
+            float y = s.y - s.size/2;
             shapeRenderer.setColor(108 / 255f, 122 / 255f, 137 / 255f, 1);
             shapeRenderer.rect(x, y, s.size, s.size);
             if (s.isPressed) {
@@ -313,14 +313,14 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         }
         // draw foreground objects
         for (Door d : doors) {
-            float x = (float) d.x;
-            float y = (float) d.y;
+            float x = d.x;
+            float y = d.y;
             shapeRenderer.setColor(22 / 255f, 160 / 255f, 133 / 255f, 1);
             shapeRenderer.rect(x, y, d.width / 2, d.height / 2, d.width, d.height, 1, 1, d.angle);
         }
         for (Platform p : platforms) {
-            float x = (float) p.x;
-            float y = (float) p.y;
+            float x = p.x;
+            float y = p.y;
             if (p.finalPlatform) {
                 shapeRenderer.setColor(1, 1, 1, 1);
                 shapeRenderer.rect(x + p.width/2 - 5, y + p.height, 10, 60);
@@ -331,8 +331,8 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             shapeRenderer.rect(x, y, p.width / 2, p.height / 2, p.width, p.height, 1, 1, p.angle);
         }
         for (MovingPlatform m : movingPlatforms) {
-            float x = (float) m.x;
-            float y = (float) m.y;
+            float x = m.x;
+            float y = m.y;
             shapeRenderer.setColor(150 / 255f, 40 / 255f, 27 / 255f, 1);
             if (m.shape == 1) {
                 shapeRenderer.rect(x, y, m.width / 2, m.height / 2, m.width, m.height, 1, 1, m.angle);
@@ -343,23 +343,25 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             }
         }
         for (Tree t : trees) {
-            float x = (float) t.x;
-            float y = (float) t.y;
+            float x = t.x;
+            float y = t.y;
             shapeRenderer.setColor(colours[t.colour]);
             shapeRenderer.rect(x - t.size / 24, y, t.size / 12, t.size / 10);
             shapeRenderer.triangle(x - t.size / 2, y + t.size / 10, x + t.size / 2, y + t.size / 10, x, y + t.size);
         }
         for (Box b : boxes) {
-            float x = (float) b.x;
-            float y = (float) b.y;
+            float x = b.x;
+            float y = b.y;
             shapeRenderer.setColor(31 / 255f, 58 / 255f, 147 / 255f, 1);
             shapeRenderer.rect(x, y, (b.width / 2), (b.height / 2), b.width, b.height, 1, 1, b.angle);
         }
         shapeRenderer.setColor(150 / 255f, 40 / 255f, 27 / 255f, 1);
         shapeRenderer.rect(0, -100, worldW, 100);
         shapeRenderer.rect(worldW, 0, 100, worldH);
-        shapeRenderer.setColor(47 / 255f, 47 / 255f, 47 / 255f, 1);
-        shapeRenderer.circle((float) golfBall.x, (float) golfBall.y, ((golfBall.width * 2) / 3));
+        shapeRenderer.end();
+        // draw golf ball and trajectory
+        worldSpriteBatch.begin();
+        worldSpriteBatch.setProjectionMatrix(camera.combined);
         if (drawTrajectory) {
             Vector2 golfBallVelocity;
             if (slowmotion) {
@@ -369,29 +371,21 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             }
             for (int i = 1; i < golfBall.view; i++) {
                 Vector2 trajectoryPoint = getTrajectoryPoint(golfBallBody.getPosition(), golfBallVelocity, i);
-                shapeRenderer.circle(trajectoryPoint.x * PIXELS_TO_METRES, trajectoryPoint.y * PIXELS_TO_METRES, 13.333333f);
-            }
-            shapeRenderer.setColor(236 / 255f, 236 / 255f, 236 / 255f, 1);
-            for (int i = 1; i < golfBall.view; i++) {
-                Vector2 trajectoryPoint = getTrajectoryPoint(golfBallBody.getPosition(), golfBallVelocity, i);
-                shapeRenderer.circle(trajectoryPoint.x * PIXELS_TO_METRES, trajectoryPoint.y * PIXELS_TO_METRES, 10);
+                worldSpriteBatch.draw(golfBallTexture, (trajectoryPoint.x * PIXELS_TO_METRES) - (golfBall.radius / 3), (trajectoryPoint.y * PIXELS_TO_METRES) - (golfBall.radius / 3), golfBall.radius / 3, golfBall.radius / 3, golfBall.radius * 2 / 3, golfBall.radius * 2 / 3, 1, 1, golfBallBody.getAngle(), 0, 0, golfBallTexture.getWidth(), golfBallTexture.getHeight(), false, false);
             }
         }
-        shapeRenderer.setColor(236 / 255f, 236 / 255f, 236 / 255f, 1);
-        shapeRenderer.circle((float) golfBall.x, (float) golfBall.y, (golfBall.width / 2));/*
-        if (ropeJoint != null) {
-            Vector2 centre = ropeJointDef.bodyB.getWorldPoint(ropeJointDef.localAnchorB);
-            shapeRenderer.circle(centre.x, centre.y, 10);
-        }*/
-        shapeRenderer.end();
+        golfBall.angle = (float) (((golfBallBody.getAngle() * 180)) / Math.PI) % 360;
+        worldSpriteBatch.draw(golfBallTexture, golfBall.x - golfBall.radius, golfBall.y - golfBall.radius, golfBall.radius, golfBall.radius, golfBall.radius * 2, golfBall.radius * 2, 1, 1, golfBall.angle, 0, 0, golfBallTexture.getWidth(), golfBallTexture.getHeight(), false, false);
+        worldSpriteBatch.end();
         // draw UI elements
         UIButtons.get(1).texture = golfBall.cameraFollow ? lookButtonTexture : lookButtonOffTexture;
         UIButtons.get(2).texture = !slowmotion ? powerUpButtonTexture : powerUpButtonOffTexture;
         screenSpriteBatch.begin();
         for (Button b : UIButtons) {
-            float x = (float) b.x;
-            float y = (float) b.y;
-            screenSpriteBatch.draw(b.texture, x - b.radius, y - b.radius, b.radius, b.radius, b.radius * 2, b.radius * 2, 1, 1, b.angle, 0, 0, b.texture.getWidth(), b.texture.getHeight(), false, false);
+            float x = b.x * Gdx.graphics.getWidth() / screenW;
+            float y = b.y * Gdx.graphics.getHeight() / screenH;
+            float radius = b.radius * Gdx.graphics.getWidth()/ screenW;
+            screenSpriteBatch.draw(b.texture, x - radius, y - radius, b.radius, radius, radius * 2, radius * 2, 1, 1, b.angle, 0, 0, b.texture.getWidth(), b.texture.getHeight(), false, false);
         }
         screenSpriteBatch.end();
         //lights.get(0).setPosition(golfBallBody.getPosition());
@@ -405,17 +399,24 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         //text.draw(screenSpriteBatch, "Camera X: " + ((int) camera.position.x), (Gdx.graphics.getWidth() - 300), (Gdx.graphics.getHeight() - 110));
         //text.draw(screenSpriteBatch, "Camera Y: " + ((int) camera.position.y), (Gdx.graphics.getWidth() - 300), (Gdx.graphics.getHeight() - 150));
         //screenSpriteBatch.end();
+        if (changeLevel) {
+            game.currLevel = game.currLevel == levels.length -1 ? 0 : game.currLevel + 1;
+            game.setScreen(new StickyGolf(game));
+        }
     }
 
     public void resize(int width, int height) {
+        System.out.println("RESIZING");
         screenH = 1280;
         screenW = 720;
+        game.clearWorld();
+        game.clearFonts();
+        System.out.println("CURRENT LEVEL: " + game.currLevel);
         worldH = currLevel.height;
         worldW = currLevel.width;
         golfBall.x = currLevel.startX;
         golfBall.y = currLevel.startY;
-        golfBall.width = 36;
-        golfBall.height = 36;
+        golfBall.radius = 18;
         platforms.clear();
         platforms.addAll(Arrays.asList(currLevel.platforms));
         doors.clear();
@@ -451,7 +452,10 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
                 }
             }
         }
+        System.out.println("BOX2D START");
         initBox2DGame();
+        System.out.println("BOX2D END");
+        System.out.println(world.getBodyCount());
     }
 
     public void render() {
@@ -468,13 +472,13 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
 
     public void dispose() {
         System.out.println("DISPOSING");
-        world.dispose();
+        //world.dispose();
         shapeRenderer.dispose();
         screenSpriteBatch.dispose();
         worldSpriteBatch.dispose();
-        boldText.dispose();
-        thinText.dispose();
-        defaultText.dispose();
+        //boldFont.dispose();
+        //thinFont.dispose();
+        //defaultFont.dispose();
         debugRenderer.dispose();
     }
 
@@ -493,7 +497,7 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         boolean ballPressed = true;
         Vector2 worldCoords = getWorldCoords(new Vector2(screenX, Gdx.graphics.getHeight() - screenY));
-        Vector2 golfBallCoords = new Vector2((float) golfBall.x, (float) golfBall.y);
+        Vector2 golfBallCoords = new Vector2(golfBall.x, golfBall.y);
         for (Switch s : switches) {
             if (worldCoords.x >= s.x - s.size/2 && worldCoords.x <= s.x + s.size/2 && worldCoords.y >= s.y - s.size/2 && worldCoords.y <= s.y + s.size/2 && golfBall.cameraFollow) {
                 ballPressed = false;
@@ -507,11 +511,15 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         }
         if (pressedButton == -1 && ballPressed) {
             for (Button b : UIButtons) {
-                if ((screenX < b.x + b.radius && screenX > b.x - b.radius) && (screenH - screenY < b.y + b.radius && screenH - screenY > b.y - b.radius)) {
+                float x = b.x * Gdx.graphics.getWidth() / screenW;
+                float y = b.y * Gdx.graphics.getHeight() / screenH;
+                float radius = b.radius * Gdx.graphics.getWidth()/ screenW;
+                if ((screenX < x + radius && screenX > x - radius) && (Gdx.graphics.getHeight() - screenY < y + radius && Gdx.graphics.getHeight() - screenY > y - radius)) {
                     ballPressed = false;
                     switch (b.target) {
                         case 0:
                             this.dispose();
+                            game.currLevel = game.currLevel == levels.length -1 ? 0 : game.currLevel + 1;
                             game.setScreen(new StickyGolf(game));
                         case 1:
                             golfBall.cameraFollow = !golfBall.cameraFollow;
@@ -598,12 +606,12 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         return false;
     }
 
-    public void initBox2DGame() {
+    private void initBox2DGame() {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         debugRenderer = new Box2DDebugRenderer();
         camera = new OrthographicCamera(screenW, screenH);
-        camera.position.set((float) golfBall.x, (float) golfBall.y, 0);
-        world = new World(new Vector2(0, -10), true);
+        camera.position.set(golfBall.x, golfBall.y, 0);
+        world = game.world;
         //RayHandler.setGammaCorrection(true);
         //RayHandler.useDiffuseLight(true);
 
@@ -637,10 +645,10 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
 
         BodyDef golfBallBodyDef = new BodyDef();
         golfBallBodyDef.type = BodyType.DynamicBody;
-        golfBallBodyDef.position.set(((float) golfBall.x) / PIXELS_TO_METRES, ((float) golfBall.y) / PIXELS_TO_METRES);
+        golfBallBodyDef.position.set((golfBall.x) / PIXELS_TO_METRES, (golfBall.y) / PIXELS_TO_METRES);
         golfBallBody = world.createBody(golfBallBodyDef);
         Shape golfBallShape = new CircleShape();
-        golfBallShape.setRadius((golfBall.width / 2) / PIXELS_TO_METRES);
+        golfBallShape.setRadius(golfBall.radius / PIXELS_TO_METRES);
         FixtureDef golfBallFixtureDef = new FixtureDef();
         golfBallFixtureDef.shape = golfBallShape;
         golfBallFixtureDef.density = 0.5f;
@@ -666,7 +674,7 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             Platform p = platforms.get(i);
             float w = p.width / PIXELS_TO_METRES;
             float h = p.height / PIXELS_TO_METRES;
-            platformBodyDef.position.set((float) p.x / PIXELS_TO_METRES + w / 2, (float) p.y / PIXELS_TO_METRES + h / 2);
+            platformBodyDef.position.set(p.x / PIXELS_TO_METRES + w / 2, p.y / PIXELS_TO_METRES + h / 2);
             platformBodyDef.angle = (float) (p.angle * Math.PI) / 180;
             Body platformBody = world.createBody(platformBodyDef);
             platformShape.setAsBox(w / 2, h / 2, new Vector2(0, 0), 0);
@@ -684,7 +692,7 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             MovingPlatform m = movingPlatforms.get(i);
             float w = m.width / PIXELS_TO_METRES;
             float h = m.height / PIXELS_TO_METRES;
-            movingPlatformBodyDef.position.set((float) m.startX / PIXELS_TO_METRES + w / 2, (float) m.startY / PIXELS_TO_METRES + h / 2);
+            movingPlatformBodyDef.position.set(m.startX / PIXELS_TO_METRES + w / 2, m.startY / PIXELS_TO_METRES + h / 2);
             movingPlatformBodyDef.angle = (float) (m.angle * Math.PI) / 180;
             Body movingPlatformBody = world.createBody(movingPlatformBodyDef);
             if (m.shape == 1) {
@@ -701,7 +709,7 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             platformFixtureDef.shape = platformShape;
             movingPlatformBody.createFixture(platformFixtureDef);
             movingPlatformBody.setUserData(m);
-            movingPlatformBody.setLinearVelocity((float) (m.endX - m.startX) / (m.time * PIXELS_TO_METRES), (float) (m.endY - m.startY) / (m.time * PIXELS_TO_METRES));
+            movingPlatformBody.setLinearVelocity((m.endX - m.startX) / (m.time * PIXELS_TO_METRES), (m.endY - m.startY) / (m.time * PIXELS_TO_METRES));
             movingPlatformBodies.add(movingPlatformBody);
         }
 
@@ -725,7 +733,7 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             Door d = doors.get(i);
             float w = d.width / PIXELS_TO_METRES;
             float h = d.height / PIXELS_TO_METRES;
-            doorBodyDef.position.set((float) d.x / PIXELS_TO_METRES + w / 2, (float) d.y / PIXELS_TO_METRES + h / 2);
+            doorBodyDef.position.set(d.x / PIXELS_TO_METRES + w / 2, d.y / PIXELS_TO_METRES + h / 2);
             doorBodyDef.angle = (float) (d.angle * Math.PI) / 180;
             Body doorBody = world.createBody(doorBodyDef);
             platformShape.setAsBox(w / 2, h / 2, new Vector2(0, 0), 0);
@@ -734,7 +742,7 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             doorBody.setUserData(d);
             doorBody.getFixtureList().get(0).setFilterData(doorFilter);
             doorBodies.add(doorBody);
-            doorHoldBodyDef.position.set((float) d.openX / PIXELS_TO_METRES + w / 2, (float) d.openY / PIXELS_TO_METRES + h /2);
+            doorHoldBodyDef.position.set(d.openX / PIXELS_TO_METRES + w / 2, d.openY / PIXELS_TO_METRES + h /2);
             Body doorHoldBody = world.createBody(doorHoldBodyDef);
             platformShape.setAsBox(1 / PIXELS_TO_METRES, 1 / PIXELS_TO_METRES);
             doorHoldFixtureDef.shape = platformShape;
@@ -765,7 +773,7 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         for (Box b : boxes) {
             float w = b.width / PIXELS_TO_METRES;
             float h = b.height / PIXELS_TO_METRES;
-            boxBodyDef.position.set((float) b.x / PIXELS_TO_METRES + w / 2, (float) b.y / PIXELS_TO_METRES + h / 2);
+            boxBodyDef.position.set(b.x / PIXELS_TO_METRES + w / 2, b.y / PIXELS_TO_METRES + h / 2);
             Body boxBody = world.createBody(boxBodyDef);
             boxShape.setAsBox(w / 2, h / 2);
             boxFixtureDef.shape = boxShape;
@@ -795,9 +803,8 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
                         if (platformBodies.contains(b)) {
                             if (((Platform) b.getUserData()).finalPlatform) {
                                 System.out.println("FINISHED");
-                                game.currLevel = game.currLevel == levels.length -1 ? 0 : game.currLevel + 1;
-                                //dispose();
-                                game.setScreen(new StickyGolf(game));
+                                changeLevel = true;
+                                break;
                             }
                         }
                     }
@@ -827,18 +834,18 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
-    public Vector2 getTrajectoryPoint(Vector2 startingPosition, Vector2 startingVelocity, float n) {
+    private Vector2 getTrajectoryPoint(Vector2 startingPosition, Vector2 startingVelocity, float n) {
         Vector2 stepVelocity = new Vector2(startingVelocity).scl(1/60f, 1/60f).scl(n);
         Vector2 stepGravity = world.getGravity().scl(1/3600f, 1/3600f).scl(0.5f * ((n * n) + n));
         return startingPosition.add(stepVelocity.x, stepVelocity.y).add(stepGravity.x, stepGravity.y);
     }
 
-    public Vector2 getWorldCoords(Vector2 screenCoords) {
+    private Vector2 getWorldCoords(Vector2 screenCoords) {
         return new Vector2(camera.position.x + (screenCoords.x - Gdx.graphics.getWidth() / 2) * ((float) screenW / Gdx.graphics.getWidth()),
                 camera.position.y + (screenCoords.y - Gdx.graphics.getHeight() / 2) * ((float) screenH / Gdx.graphics.getHeight()));
     }
 
-    public double getDistance(Vector2 obj1, Vector2 obj2) {
+    private double getDistance(Vector2 obj1, Vector2 obj2) {
         return Math.sqrt(Math.pow((obj1.x - obj2.x), 2) + Math.pow((obj1.y - obj2.y), 2));
     }
 }

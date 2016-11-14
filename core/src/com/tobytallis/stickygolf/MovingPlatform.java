@@ -10,18 +10,18 @@ public class MovingPlatform {
     int width;
     // links to action (0 is no action)
     int link;
-    double startX;
-    double startY;
-    double endX;
-    double endY;
-    double x;
-    double y;
+    float startX;
+    float startY;
+    float endX;
+    float endY;
+    float x;
+    float y;
     float angle;
     boolean isMoving;
     float time;
     int shape;
 
-    public MovingPlatform(double startX, double startY, double endX, double endY, int width, int height, float time, float angle, int shape, boolean shadow, int[] trees, boolean isMoving, int link) {
+    public MovingPlatform(float startX, float startY, float endX, float endY, int width, int height, float time, float angle, int shape, boolean shadow, int[] trees, boolean isMoving, int link) {
         finalPlatform = false;
         this.startX = startX;
         this.startY = startY;
@@ -38,11 +38,11 @@ public class MovingPlatform {
         this.shape = shape;
     }
 
-    public MovingPlatform(double startX, double startY, double endX, double endY, int width, int height, float time) {
+    public MovingPlatform(float startX, float startY, float endX, float endY, int width, int height, float time) {
         this(startX, startY, endX, endY, width, height, time, 0, 1, true, new int[0], true, 0);
     }
 
-    public MovingPlatform(double startX, double startY, double endX, double endY, int width, int height, float time, int shape) {
+    public MovingPlatform(float startX, float startY, float endX, float endY, int width, int height, float time, int shape) {
         this(startX, startY, endX, endY, width, height, time, 0, shape, true, new int[0], true, 0);
     }
 }

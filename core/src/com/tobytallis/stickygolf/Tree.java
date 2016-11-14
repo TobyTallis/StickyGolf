@@ -4,10 +4,10 @@ public class Tree {
 
     int colour;
     int size;
-    double x;
-    double y;
+    float x;
+    float y;
 
-    public Tree(double x, double y, int colour, int size) {
+    public Tree(float x, float y, int colour, int size) {
         this.x = x;
         this.y = y;
         this.colour =  colour;

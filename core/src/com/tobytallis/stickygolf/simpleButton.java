@@ -9,10 +9,10 @@ public class simpleButton {
     boolean rotation;
     Texture texture;
     int width;
-    double x;
-    double y;
+    float x;
+    float y;
 
-    public simpleButton(Texture tex, double startX, double startY, int startWidth, int startHeight, int startAngle) {
+    public simpleButton(Texture tex, float startX, float startY, int startWidth, int startHeight, int startAngle) {
         rotation = false;
         texture = tex;
         x = startX;

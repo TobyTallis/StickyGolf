@@ -4,13 +4,11 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
@@ -32,19 +30,19 @@ import java.util.ArrayList;
 
 public class MainMenu implements ApplicationListener, InputProcessor, Screen {
 
-    final Screens game;
+    private final Screens game;
     private int screenW, screenH;
 
     //ArrayList<PointLight> lights = new ArrayList<PointLight>();
     //RayHandler rayHandler;
-    World world;
-    final float PIXELS_TO_METRES;
-    Matrix4 debugMatrix;
-    Box2DDebugRenderer debugRenderer;
-    OrthographicCamera camera;
-    private BitmapFont font;
+    private World world;
+    private final float PIXELS_TO_METRES;
+    private Matrix4 debugMatrix;
+    private Box2DDebugRenderer debugRenderer;
+    private OrthographicCamera camera;
+    private BitmapFont defaultFont;
     private ShapeRenderer shapeRenderer;
-    SpriteBatch spriteBatch;
+    private SpriteBatch spriteBatch;
     private Texture playButtonTexture;
     private Texture settingsButtonTexture;
     private Texture achievementsButtonTexture;
@@ -53,9 +51,9 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
     private Texture vibrationButtonTexture;
     private Texture soundButtonOffTexture;
     private Texture vibrationButtonOffTexture;
-    DistanceJointDef distanceJointDef = new DistanceJointDef();
-    PrismaticJointDef prismaticJointDef = new PrismaticJointDef();
-    RopeJointDef ropeJointDef = new RopeJointDef();
+    private DistanceJointDef distanceJointDef = new DistanceJointDef();
+    private PrismaticJointDef prismaticJointDef = new PrismaticJointDef();
+    private RopeJointDef ropeJointDef = new RopeJointDef();
     private ArrayList<Joint> joints = new ArrayList<Joint>();
     private ArrayList<Body> buttonBodies = new ArrayList<Body>();
     private ArrayList<Button> buttons = new ArrayList<Button>();
@@ -63,28 +61,24 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
     private ArrayList<Platform> platforms = new ArrayList<Platform>();
     private int pressedButton = -1;
     private boolean settings = false;
-    Filter noCollisionFilter;
+    private Filter noCollisionFilter;
 
     public MainMenu(final Screens gam) {
-        PIXELS_TO_METRES = 100;
         game = gam;
+        PIXELS_TO_METRES = 100;
         Gdx.input.setInputProcessor(this);
         spriteBatch = new SpriteBatch();
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.color = Color.BLACK;
-        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("Roboto-Medium.ttf"));
-        parameter.size = 30;
-        font = fontGenerator.generateFont(parameter);
-        font.setColor(Color.WHITE);
         shapeRenderer = new ShapeRenderer();
-        playButtonTexture = new Texture(Gdx.files.internal("PlayButton512.png"));
-        settingsButtonTexture = new Texture(Gdx.files.internal("SettingsButton512.png"));
-        achievementsButtonTexture = new Texture(Gdx.files.internal("AchievementsButton512.png"));
-        purchaseButtonTexture = new Texture(Gdx.files.internal("PurchaseButton512.png"));
-        soundButtonTexture = new Texture(Gdx.files.internal("SoundButton512.png"));
-        vibrationButtonTexture = new Texture(Gdx.files.internal("VibrationButton512.png"));
-        soundButtonOffTexture = new Texture(Gdx.files.internal("SoundButtonOff512.png"));
-        vibrationButtonOffTexture = new Texture(Gdx.files.internal("VibrationButtonOff512.png"));
+        game.assetManager.finishLoading();
+        defaultFont = game.assetManager.get("Roboto-Medium.ttf", BitmapFont.class);
+        achievementsButtonTexture = game.assetManager.get("AchievementsButton512.png", Texture.class);
+        playButtonTexture = game.assetManager.get("PlayButton512.png", Texture.class);
+        purchaseButtonTexture = game.assetManager.get("PurchaseButton512.png", Texture.class);
+        settingsButtonTexture = game.assetManager.get("SettingsButton512.png", Texture.class);
+        soundButtonTexture = game.assetManager.get("SoundButton512.png", Texture.class);
+        soundButtonOffTexture = game.assetManager.get("SoundButtonOff512.png", Texture.class);
+        vibrationButtonTexture = game.assetManager.get("VibrationButton512.png", Texture.class);
+        vibrationButtonOffTexture = game.assetManager.get("VibrationButtonOff512.png", Texture.class);
     }
 
     public void create() {
@@ -113,8 +107,8 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
         for (int i = 0; i < buttons.size(); i++) {
             Button b = buttons.get(i);
             Body d = buttonBodies.get(i);
-            b.x = (double) (PIXELS_TO_METRES * d.getPosition().x);
-            b.y = (double) (PIXELS_TO_METRES * d.getPosition().y);
+            b.x = (PIXELS_TO_METRES * d.getPosition().x);
+            b.y = (PIXELS_TO_METRES * d.getPosition().y);
             float x = (float) b.x;
             float y = (float) b.y;
             shapeRenderer.circle(x + game.shadowX, y - game.shadowX, b.radius);
@@ -128,10 +122,11 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
         for (int i = 0; i < buttons.size(); i++) {
             Button b = buttons.get(i);
             Body d = buttonBodies.get(i);
-            float x = (float) b.x;
-            float y = (float) b.y;
+            float x = (float) b.x * Gdx.graphics.getWidth() / screenW;
+            float y = (float) b.y * Gdx.graphics.getHeight() / screenH;
+            float radius = b.radius * Gdx.graphics.getWidth()/ screenW;
             b.angle = (float) (((d.getAngle() * 180)) / Math.PI) % 360;
-            spriteBatch.draw(b.texture, x - b.radius, y - b.radius, b.radius, b.radius, b.radius * 2, b.radius * 2, 1, 1, b.angle, 0, 0, b.texture.getWidth(), b.texture.getHeight(), false, false);
+            spriteBatch.draw(b.texture, x - radius, y - radius, radius, radius, radius * 2, radius * 2, 1, 1, b.angle, 0, 0, b.texture.getWidth(), b.texture.getHeight(), false, false);
         }
         spriteBatch.end();
         shapeRenderer.begin(ShapeType.Filled);
@@ -156,7 +151,7 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
             distanceJointDef.length = (float) getDistance(distanceJointDef.bodyA.getPosition(), distanceJointDef.bodyB.getPosition());
             joints.add(world.createJoint(distanceJointDef));
         }
-        if (buttonBodies.get(1).getPosition().y < 0 || buttonBodies.get(3).getPosition().y < 0) {
+        if (buttonBodies.get(1).getPosition().y < -1 || buttonBodies.get(3).getPosition().y < -1) {
             switchScreen();
             pressedButton = -1;
         }
@@ -169,6 +164,8 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
         // add anything that is one-time relative to screen size
         screenH = 1280;
         screenW = 720;
+        game.clearWorld();
+        game.clearFonts();
         platforms.clear();
         platformBodies.clear();
         platforms.add(new Platform(18, 1024, screenW * 19 / 20, 30));
@@ -184,8 +181,8 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
         buttons.add(new Button(screenW/5 - 50, 256, 100, 0, settingsButtonTexture, 1));
         buttons.add(new Button(screenW/2 - 50, 213, 100, 0, achievementsButtonTexture, 2));
         buttons.add(new Button(screenW*4/5 - 50, 256, 100, 0, purchaseButtonTexture, 3));
-        buttons.add(new Button(screenW/3 - 50, 1024, 100, 0, soundButtonTexture, 4));
-        buttons.add(new Button(screenW*2/3 - 50, 1024, 100, 0, vibrationButtonTexture, 5));
+        buttons.add(new Button(screenW/3 - 50, 1032, 100, 0, soundButtonTexture, 4));
+        buttons.add(new Button(screenW*2/3 - 50, 1032, 100, 0, vibrationButtonTexture, 5));
         initBox2DMenu();
     }
 
@@ -206,11 +203,11 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
     }
 
     public void dispose() {
-        world.dispose();
+        //world.dispose();
         System.out.println("DISPOSING");
         shapeRenderer.dispose();
         spriteBatch.dispose();
-        font.dispose();
+        //defaultFont.dispose();
         debugRenderer.dispose();
     }
 
@@ -231,7 +228,10 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
             for (int i = 0; i < buttons.size(); i++) {
                 Button b = buttons.get(i);
                 Body d = buttonBodies.get(i);
-                if ((screenX < b.x + b.radius && screenX > b.x - b.radius) && (screenH - screenY < b.y + b.radius && screenH - screenY > b.y - b.radius)) {
+                float x = (float) b.x * Gdx.graphics.getWidth() / screenW;
+                float y = (float) b.y * Gdx.graphics.getHeight() / screenH;
+                float radius = b.radius * Gdx.graphics.getWidth()/ screenW;
+                if ((screenX < x + radius && screenX > x - radius) && (Gdx.graphics.getHeight() - screenY < y + radius && Gdx.graphics.getHeight() - screenY > y - radius)) {
                     pressedButton = b.target;
                 } else {
                     d.setFixedRotation(false);
@@ -265,7 +265,7 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
         debugRenderer = new Box2DDebugRenderer();
         camera = new OrthographicCamera(screenW, screenH);
         camera.position.set((float) screenW/2, (float) screenH/2, 0.0f);
-        world = new World(new Vector2(0, -10), true);
+        world = game.world;
 
         BodyDef platformBodyDef = new BodyDef();
         platformBodyDef.type = BodyDef.BodyType.StaticBody;
@@ -362,6 +362,7 @@ public class MainMenu implements ApplicationListener, InputProcessor, Screen {
         switch (pressedButton) {
             case 0:
                 //play
+                System.out.println("GO GO GO");
                 game.setScreen(new StickyGolf(game));
                 break;
             case 1:

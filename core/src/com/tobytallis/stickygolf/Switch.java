@@ -7,10 +7,10 @@ public class Switch {
     int size;
     // links to action (0 is no action)
     int link;
-    double x;
-    double y;
+    float x;
+    float y;
 
-    public Switch(double x, double y, int size, int link, boolean isPressed, boolean onOnce) {
+    public Switch(float x, float y, int size, int link, boolean isPressed, boolean onOnce) {
         this.x = x;
         this.y = y;
         this.size = size;
@@ -19,15 +19,15 @@ public class Switch {
         this.onOnce = onOnce;
     }
 
-    public Switch(double x, double y, int size, int link, boolean isPressed) {
+    public Switch(float x, float y, int size, int link, boolean isPressed) {
         this(x, y, size, link, isPressed, false);
     }
 
-    public Switch(double x, double y, int size, int link) {
+    public Switch(float x, float y, int size, int link) {
         this(x, y, size, link, false, false);
     }
 
-    public Switch(double x, double y, int size) {
+    public Switch(float x, float y, int size) {
         this(x, y, size, 0, false, false);
     }
 }

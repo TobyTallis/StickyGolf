@@ -11,14 +11,14 @@ public class Door {
     int width;
     // links to action (0 is no action)
     int link;
-    double x;
-    double y;
-    double openX;
-    double openY;
+    float x;
+    float y;
+    float openX;
+    float openY;
     float angle;
     PrismaticJoint joint;
 
-    public Door(double x, double y, double openX, double openY, int width, int height, float angle, int link, boolean shadow) {
+    public Door(float x, float y, float openX, float openY, int width, int height, float angle, int link, boolean shadow) {
         this.x = x;
         this.y = y;
         this.openX = openX;
@@ -30,7 +30,7 @@ public class Door {
         this.shadow = shadow;
     }
 
-    public Door(double x, double y, double openX, double openY, int width, int height, int link) {
+    public Door(float x, float y, float openX, float openY, int width, int height, int link) {
         this(x, y, openX, openY, width, height, 0, link, true);
     }
 }

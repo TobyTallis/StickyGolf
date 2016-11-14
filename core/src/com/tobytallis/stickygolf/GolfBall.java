@@ -5,13 +5,13 @@ public class GolfBall {
     int airHits;
     int hits;
     int blocked;
-    int height;
+    int radius;
     int maxAirHits;
     double powerMultiplier;
     int view;
-    int width;
-    double x;
-    double y;
+    float x;
+    float y;
+    float angle;
     boolean cameraFollow;
 
     public GolfBall() {
@@ -21,6 +21,7 @@ public class GolfBall {
         hits = 0;
         powerMultiplier = 0.8;
         view = 20;
+        angle = 0;
         cameraFollow = true;
     }
 }

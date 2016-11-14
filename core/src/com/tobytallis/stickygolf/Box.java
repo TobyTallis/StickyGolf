@@ -5,10 +5,10 @@ public class Box {
     int height;
     int width;
     float angle;
-    double x;
-    double y;
+    float x;
+    float y;
 
-    public Box(double x, double y, int width, int height, float angle) {
+    public Box(float x, float y, int width, int height, float angle) {
         this.x = x;
         this.y = y;
         this.width = width;
