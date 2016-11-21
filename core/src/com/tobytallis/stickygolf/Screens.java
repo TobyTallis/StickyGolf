@@ -82,6 +82,8 @@ public class Screens extends Game {
         assetManager.load("SoundButtonOff512.png", Texture.class, textureParameter);
         assetManager.load("VibrationButton512.png", Texture.class, textureParameter);
         assetManager.load("VibrationButtonOff512.png", Texture.class, textureParameter);
+        assetManager.load("ZoomInButton512.png", Texture.class, textureParameter);
+        assetManager.load("ZoomOutButton512.png", Texture.class, textureParameter);
         FileHandleResolver resolver = new InternalFileHandleResolver();
         assetManager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
         assetManager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));

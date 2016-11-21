@@ -7,11 +7,13 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -54,18 +56,19 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
     private Body golfBallBody;
     private Level currLevel;
     private MovingPlatform mPlatform001 = new MovingPlatform(1300, 400, 2000, 800, 200, 60, 5);
-    private Level level00 = new Level(0, 4000, 8000, 300, 400, new Platform[]{new Platform(500, 1200, 300, 60, new int[]{180, 9, 230}), new Platform(1600, 1800, 600, 60, new int[]{430, 8, 200}), new Platform(1100, 200, 60, 600), new Platform(3300, 600, 300, 60, new int[]{50, 3, 170, 200, 1, 200}), new Platform(3300, 1000, 700, 60, new int[]{550, 5, 180}), new Platform(2800, 1200, 100, 60, 0, true, new int[0], 0, true), new Platform(2800, 200, 900, 60, new int[]{300, 12, 220, 700, 2, 180}), new Platform(100, 4000, 3900, 60, new int[]{100, 0, 100, 200, 1, 100, 300, 2, 100, 400, 3, 100, 500, 4, 100, 600, 5, 100, 700, 6, 100, 800, 7, 100, 900, 8, 100, 1000, 9, 100, 1100, 10, 100, 1200, 11, 100, 1300, 12, 100, 1400, 13, 100, 1500, 14, 100, 1600, 15, 100, 1700, 16, 100, 1800, 17, 100, 1900, 18, 100, 2000, 19, 100, 2100, 20, 100, 2200, 21, 100, 2300, 22, 100, 2400, 23, 100, 2500, 24, 100, 2600, 25, 100, 2700, 26, 100}), new Platform(0, 0, 4000, 60, 0, false, new int[]{200, 2, 220, 800, 4, 140, 2400, 11, 230}, 0, false), new Platform(0, 0, 60, 8000, false), new Platform(3940, 0, 60, 8000, false), new Platform(0, 7940, 4000, 60, false), new Platform(300, 6000, 600, 60, 20, true, new int[0], 0, false)}, new Box[]{new Box(500, 300, 50, 50, 0), new Box(600, 300, 50, 50, 0), new Box(500, 380, 50, 50, 0), new Box(2400, 6060, 50, 50, 0), new Box(600, 6100, 50, 50, 0), new Box(700, 300, 50, 50, 0)}, new Switch[]{new Switch(1650, 1900, 60, 1), new Switch(800, 400, 60, 1), new Switch(300, 1600, 60, 2), new Switch(2300, 6300, 60, 3)}, new Door[]{new Door(1115, 60, 1115, 200, 30, 140, 1), new Door(500, 1800, 500, 2200, 30, 400, 2)}, new MovingPlatform[]{new MovingPlatform(600, 5000, 2800, 5000, 200, 60, 5, 2), mPlatform001, new MovingPlatform(400, 7000, 1600, 6200, 200, 60, 3, 30, 2, true, new int[0], true, 0)}, new Text[]{new Text(2, "World 0, Level 0", 200, 400), new Text(1, "this is a", 670, 500), new Text(2, "switch", 670, 470), new Text(1, "it opens", 920, 200), new Text(1, "this", 920, 170), new Text(2, "door", 967, 170), new Text(1, "this", 0, 200, mPlatform001), new Text(2, "platform", 45, 201, mPlatform001), new Text(1, "moves", 30, 170, mPlatform001)});
+    private Level level00 = new Level(0, 4000, 8000, 300, 400, new Platform[]{new Platform(500, 1200, 300, 60, new int[]{180, 9, 230}), new Platform(1600, 1800, 600, 60, new int[]{430, 8, 200}), new Platform(1100, 200, 60, 600), new Platform(3300, 600, 300, 60, new int[]{50, 3, 170, 200, 1, 200}), new Platform(3300, 1000, 700, 60, new int[]{550, 5, 180}), new Platform(2800, 1200, 100, 59), new Platform(2800, 1259, 100, 1, 0, true, new int[0], 0, true), new Platform(2800, 200, 900, 60, new int[]{300, 12, 220, 700, 2, 180}), new Platform(100, 4000, 3900, 60, new int[]{100, 0, 100, 200, 1, 100, 300, 2, 100, 400, 3, 100, 500, 4, 100, 600, 5, 100, 700, 6, 100, 800, 7, 100, 900, 8, 100, 1000, 9, 100, 1100, 10, 100, 1200, 11, 100, 1300, 12, 100, 1400, 13, 100, 1500, 14, 100, 1600, 15, 100, 1700, 16, 100, 1800, 17, 100, 1900, 18, 100, 2000, 19, 100, 2100, 20, 100, 2200, 21, 100, 2300, 22, 100, 2400, 23, 100, 2500, 24, 100, 2600, 25, 100, 2700, 26, 100}), new Platform(0, 0, 4000, 60, 0, false, new int[]{200, 2, 220, 800, 4, 140, 2400, 11, 230}, 0, false), new Platform(0, 0, 60, 8000, false), new Platform(3940, 0, 60, 8000, false), new Platform(0, 7940, 4000, 60, false), new Platform(300, 6000, 600, 60, 20, true, new int[0], 0, false)}, new Box[]{new Box(500, 300, 50, 50, 0), new Box(600, 300, 50, 50, 0), new Box(500, 380, 50, 50, 0), new Box(2400, 6060, 50, 50, 0), new Box(600, 6100, 50, 50, 0), new Box(700, 300, 50, 50, 0)}, new Switch[]{new Switch(1650, 1900, 60, 1), new Switch(800, 400, 60, 1), new Switch(300, 1600, 60, 2), new Switch(2300, 6300, 60, 3)}, new Door[]{new Door(1115, 60, 1115, 200, 30, 140, 1), new Door(500, 1800, 500, 2200, 30, 400, 2)}, new MovingPlatform[]{new MovingPlatform(600, 5000, 2800, 5000, 200, 60, 5, 2), mPlatform001, new MovingPlatform(400, 7000, 1600, 6200, 200, 60, 3, 30, 2, true, new int[0], true, 0)}, new Text[]{new Text(2, "World 0, Level 0", 200, 400), new Text(1, "this is a", 670, 500), new Text(2, "switch", 670, 470), new Text(1, "it opens", 920, 200), new Text(1, "this", 920, 170), new Text(2, "door", 967, 170), new Text(1, "this", 0, 200, mPlatform001), new Text(2, "platform", 45, 201, mPlatform001), new Text(1, "moves", 30, 170, mPlatform001)});
     private Box box111 = new Box(625, 630, 50, 50, 0);
-    private Level level11 = new Level(1, 1000, 1000, 100, 200, new Platform[]{new Platform(-60, -60, 1120, 60, false), new Platform(-60, 0, 60, 1000, false), new Platform(1000, 0, 60, 1000, false), new Platform(-60, 1000, 1120, 60, false), new Platform(-60, 100, 360, 60), new Platform(300, 500, 100, 60), new Platform(450, 550, 100, 60), new Platform(600, 600, 100, 60), new Platform(800, 700, 200, 60), new Platform(801, 760, 198, 1, 0, true, new int[0], 0, true), new Platform(200, 500, 60, 300)}, new Box[]{box111, new Box(710, 300, 150, 80, 0)}, new Switch[]{new Switch(300, 800, 60, 1, false)}, new Door[]{new Door(770, 700, 770, 1000, 30, 300, 1)}, new MovingPlatform[0], new Text[]{new Text(2, "World 1, Level 1", 20, 40), new Text(1, "this", -30, 50, box111), new Text(2, "box", -10, 47, null, box111), new Text(1, "looks fun", -30, 20, box111)});
-    private Level level12 = new Level(1, 3000, 3000, 100, 200, new Platform[]{new Platform(-60, -60, 3120, 60, false), new Platform(-60, 0, 60, 3000, false), new Platform(3000, 0, 60, 3000, false), new Platform(-60, 3000, 3120, 60, false), new Platform(-60, 970, 2060, 60), new Platform(1000, 1970, 2000, 60), new Platform(2700, 2030, 200, 1, 0, true, new int[0], 0, true)}, new Box[]{new Box(200, 300, 50, 50, 0), new Box(1470, 0, 60, 950, 0), new Box(1470, 1030, 60, 900, 0)}, new Switch[0], new Door[0], new MovingPlatform[]{new MovingPlatform(2700, 300, 2700, 1700, 180, 60, 6), new MovingPlatform(120, 1330, 120, 2730, 180, 60, 6)}, new Text[]{new Text(2, "World 1, Level 2", 300, 400)});
+    private Level level11 = new Level(1, 1000, 1000, 100, 200, new Platform[]{new Platform(-60, -60, 1120, 60, false), new Platform(-60, 0, 60, 1000, false), new Platform(1000, 0, 60, 1000, false), new Platform(-60, 1000, 1120, 60, false), new Platform(-60, 100, 360, 60), new Platform(300, 500, 100, 60), new Platform(450, 550, 100, 60), new Platform(600, 600, 100, 60), new Platform(800, 700, 200, 59), new Platform(800, 759, 200, 1, 0, true, new int[0], 0, true), new Platform(200, 500, 60, 300)}, new Box[]{box111, new Box(710, 300, 150, 80, 0)}, new Switch[]{new Switch(300, 800, 60, 1, false)}, new Door[]{new Door(770, 700, 770, 1000, 30, 300, 1)}, new MovingPlatform[0], new Text[]{new Text(2, "World 1, Level 1", 20, 40), new Text(1, "this", -30, 50, box111), new Text(2, "box", -10, 47, null, box111), new Text(1, "looks fun", -30, 20, box111)});
+    private Level level12 = new Level(1, 3000, 3000, 100, 200, new Platform[]{new Platform(-60, -60, 3120, 60, false), new Platform(-60, 0, 60, 3000, false), new Platform(3000, 0, 60, 3000, false), new Platform(-60, 3000, 3120, 60, false), new Platform(-60, 970, 2060, 60), new Platform(1000, 1970, 1700, 60), new Platform(2900, 1970, 100, 60), new Platform(2700, 1970, 200, 59), new Platform(2700, 2029, 200, 1, 0, true, new int[0], 0, true)}, new Box[]{new Box(200, 300, 50, 50, 0), new Box(1470, 0, 60, 950, 0), new Box(1470, 1030, 60, 900, 0)}, new Switch[0], new Door[0], new MovingPlatform[]{new MovingPlatform(2700, 300, 2700, 1700, 180, 60, 6), new MovingPlatform(120, 1330, 120, 2730, 180, 60, 6)}, new Text[]{new Text(2, "World 1, Level 2", 300, 400)});
     private Level[] levels = new Level[]{level00, level11, level12};
-    private int originalZoomPoint;
+    //private ArrayList<Texture> platformTextures = new ArrayList<Texture>();
     private ArrayList<Body> platformBodies = new ArrayList<Body>();
     private ArrayList<Platform> platforms = new ArrayList<Platform>();
     private ArrayList<Body> movingPlatformBodies = new ArrayList<Body>();
     private ArrayList<MovingPlatform> movingPlatforms = new ArrayList<MovingPlatform>();
     private ArrayList<Body> doorBodies = new ArrayList<Body>();
     private ArrayList<Door> doors = new ArrayList<Door>();
+    private ArrayList<Texture> boxTextures = new ArrayList<Texture>();
     private ArrayList<Body> boxBodies = new ArrayList<Body>();
     private ArrayList<Box> boxes = new ArrayList<Box>();
     private ArrayList<Tree> trees = new ArrayList<Tree>();
@@ -82,7 +85,6 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
     private World world;
     private int worldH;
     private int worldW;
-    private boolean zoomChange;
     private BitmapFont defaultFont;
     private BitmapFont thinFont;
     private BitmapFont boldFont;
@@ -100,18 +102,21 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
     private Texture restartButtonTexture;
     private Texture lookButtonTexture;
     private Texture lookButtonOffTexture;
+    private Texture zoomInButtonTexture;
+    private Texture zoomOutButtonTexture;
     private Texture powerUpButtonTexture;
     private Texture powerUpButtonOffTexture;
     private Texture golfBallTexture;
     private int pressedButton = -1;
     private boolean changeLevel = false;
+    private Vector2 touchDownPosition;
+    private Vector2 touchDownCameraPosition;
+    private float lastCameraZoom = 1;
 
     public StickyGolf(Screens gam) {
         game = gam;
-        originalZoomPoint = 0;
         ballTouched = false;
         drawTrajectory = false;
-        zoomChange = false;
         stopMovement = false;
         shapeRenderer = new ShapeRenderer();
         golfBall = new GolfBall();
@@ -142,6 +147,8 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         golfBallTexture = game.assetManager.get("GolfBall512.png", Texture.class);
         lookButtonTexture = game.assetManager.get("LookButton512.png", Texture.class);
         lookButtonOffTexture = game.assetManager.get("LookButtonOff512.png", Texture.class);
+        zoomInButtonTexture = game.assetManager.get("ZoomInButton512.png", Texture.class);
+        zoomOutButtonTexture = game.assetManager.get("ZoomOutButton512.png", Texture.class);
         powerUpButtonTexture = game.assetManager.get("PowerUpButton512.png", Texture.class);
         powerUpButtonOffTexture = game.assetManager.get("PowerUpButtonOff512.png", Texture.class);
         restartButtonTexture = game.assetManager.get("RestartButton512.png", Texture.class);
@@ -348,13 +355,13 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             shapeRenderer.setColor(colours[t.colour]);
             shapeRenderer.rect(x - t.size / 24, y, t.size / 12, t.size / 10);
             shapeRenderer.triangle(x - t.size / 2, y + t.size / 10, x + t.size / 2, y + t.size / 10, x, y + t.size);
-        }
+        }/*
         for (Box b : boxes) {
             float x = b.x;
             float y = b.y;
             shapeRenderer.setColor(31 / 255f, 58 / 255f, 147 / 255f, 1);
-            shapeRenderer.rect(x, y, (b.width / 2), (b.height / 2), b.width, b.height, 1, 1, b.angle);
-        }
+            shapeRenderer.rect(x, y, b.width / 2, b.height / 2, b.width, b.height, 1, 1, b.angle);
+        }*/
         shapeRenderer.setColor(150 / 255f, 40 / 255f, 27 / 255f, 1);
         shapeRenderer.rect(0, -100, worldW, 100);
         shapeRenderer.rect(worldW, 0, 100, worldH);
@@ -362,6 +369,16 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         // draw golf ball and trajectory
         worldSpriteBatch.begin();
         worldSpriteBatch.setProjectionMatrix(camera.combined);
+        /*for (int i = 0; i < platforms.size(); i++) {
+            Platform p = platforms.get(i);
+            Texture t = platformTextures.get(i);
+            worldSpriteBatch.draw(t, p.x, p.y, p.width/2, p.height/2, p.width, p.height, 1, 1, p.angle, 0, 0, t.getWidth(), t.getHeight(), false, false);
+        }*/
+        for (int i = 0; i < boxes.size(); i++) {
+            Box b = boxes.get(i);
+            Texture t = boxTextures.get(i);
+            worldSpriteBatch.draw(t, b.x, b.y, b.width/2, b.height/2, b.width, b.height, 1, 1, b.angle, 0, 0, t.getWidth(), t.getHeight(), false, false);
+        }
         if (drawTrajectory) {
             Vector2 golfBallVelocity;
             if (slowmotion) {
@@ -382,14 +399,16 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         UIButtons.get(2).texture = !slowmotion ? powerUpButtonTexture : powerUpButtonOffTexture;
         screenSpriteBatch.begin();
         for (Button b : UIButtons) {
-            float x = b.x * Gdx.graphics.getWidth() / screenW;
-            float y = b.y * Gdx.graphics.getHeight() / screenH;
-            float radius = b.radius * Gdx.graphics.getWidth()/ screenW;
-            screenSpriteBatch.draw(b.texture, x - radius, y - radius, b.radius, radius, radius * 2, radius * 2, 1, 1, b.angle, 0, 0, b.texture.getWidth(), b.texture.getHeight(), false, false);
+            if (b.enabled) {
+                float x = b.x * Gdx.graphics.getWidth() / screenW;
+                float y = b.y * Gdx.graphics.getHeight() / screenH;
+                float radius = b.radius * Gdx.graphics.getWidth() / screenW;
+                screenSpriteBatch.draw(b.texture, x - radius, y - radius, b.radius, radius, radius * 2, radius * 2, 1, 1, b.angle, 0, 0, b.texture.getWidth(), b.texture.getHeight(), false, false);
+            }
         }
         screenSpriteBatch.end();
         //lights.get(0).setPosition(golfBallBody.getPosition());
-        //debugRenderer.render(world, debugMatrix);
+        debugRenderer.render(world, debugMatrix);
         //rayHandler.setCombinedMatrix(debugMatrix);
         //rayHandler.updateAndRender();
         Gdx.gl.glDisable(GL20.GL_BLEND);
@@ -431,9 +450,11 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         texts.clear();
         texts.addAll(Arrays.asList(currLevel.texts));
         UIButtons.clear();
-        UIButtons.add(new Button(screenW - 50, screenH - 50, 50, 0, restartButtonTexture, 0));
-        UIButtons.add(new Button(50, screenH - 50, 50, 0, lookButtonTexture, 1));
-        UIButtons.add(new Button(150, screenH - 50, 50, 0, powerUpButtonTexture, 2));
+        UIButtons.add(new Button(screenW - Gdx.graphics.getWidth()/12, screenH - Gdx.graphics.getWidth()/12, Gdx.graphics.getWidth()/12, 0, restartButtonTexture, 0));
+        UIButtons.add(new Button(screenW - Gdx.graphics.getWidth()/12, Gdx.graphics.getWidth()/12, Gdx.graphics.getWidth()/12, 0, lookButtonTexture, 1));
+        UIButtons.add(new Button(screenW - Gdx.graphics.getWidth()/4, Gdx.graphics.getWidth()/12, Gdx.graphics.getWidth()/12, 0, powerUpButtonTexture, 2));
+        UIButtons.add(new Button(screenW - Gdx.graphics.getWidth()/12, Gdx.graphics.getWidth()*5/12, Gdx.graphics.getWidth()/12, 0, zoomInButtonTexture, 3, false));
+        UIButtons.add(new Button(screenW - Gdx.graphics.getWidth()/12, Gdx.graphics.getWidth()/4, Gdx.graphics.getWidth()/12, 0, zoomOutButtonTexture, 4, false));
         trees.clear();
         for (Platform p : platforms) {
             for (int i = 0; i < p.trees.length; i += 3) {
@@ -455,7 +476,9 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
         System.out.println("BOX2D START");
         initBox2DGame();
         System.out.println("BOX2D END");
-        System.out.println(world.getBodyCount());
+        System.out.println("BODY COUNT: " + world.getBodyCount());
+        camera.viewportWidth = screenW;
+        camera.viewportHeight = screenH;
     }
 
     public void render() {
@@ -497,16 +520,9 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         boolean ballPressed = true;
         Vector2 worldCoords = getWorldCoords(new Vector2(screenX, Gdx.graphics.getHeight() - screenY));
-        Vector2 golfBallCoords = new Vector2(golfBall.x, golfBall.y);
         for (Switch s : switches) {
             if (worldCoords.x >= s.x - s.size/2 && worldCoords.x <= s.x + s.size/2 && worldCoords.y >= s.y - s.size/2 && worldCoords.y <= s.y + s.size/2 && golfBall.cameraFollow) {
                 ballPressed = false;
-                s.isPressed = !s.isPressed;
-                for (Door d : links.get(s)) {
-                    d.isOpen = !d.isOpen;
-                    d.justChanged = true;
-                    d.joint.setMotorSpeed(-d.joint.getMotorSpeed());
-                }
             }
         }
         if (pressedButton == -1 && ballPressed) {
@@ -516,14 +532,50 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
                 float radius = b.radius * Gdx.graphics.getWidth()/ screenW;
                 if ((screenX < x + radius && screenX > x - radius) && (Gdx.graphics.getHeight() - screenY < y + radius && Gdx.graphics.getHeight() - screenY > y - radius)) {
                     ballPressed = false;
+                }
+            }
+        }
+        if (ballPressed) {
+            if (golfBall.cameraFollow) {
+                ballTouched = true;
+            } else {
+                touchDownPosition = worldCoords;
+                touchDownCameraPosition = new Vector2(camera.position.x, camera.position.y);
+            }
+        }
+        return true;
+    }
+
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        Vector2 worldCoords = getWorldCoords(new Vector2(screenX, Gdx.graphics.getHeight() - screenY));
+        Vector2 golfBallCoords = new Vector2(golfBall.x, golfBall.y);
+        for (Switch s : switches) {
+            if (worldCoords.x >= s.x - s.size/2 && worldCoords.x <= s.x + s.size/2 && worldCoords.y >= s.y - s.size/2 && worldCoords.y <= s.y + s.size/2 && golfBall.cameraFollow) {
+                s.isPressed = !s.isPressed;
+                for (Door d : links.get(s)) {
+                    d.isOpen = !d.isOpen;
+                    d.justChanged = true;
+                    d.joint.setMotorSpeed(-d.joint.getMotorSpeed());
+                }
+            }
+        }
+        if (pressedButton == -1) {
+            for (Button b : UIButtons) {
+                float x = b.x * Gdx.graphics.getWidth() / screenW;
+                float y = b.y * Gdx.graphics.getHeight() / screenH;
+                float radius = b.radius * Gdx.graphics.getWidth()/ screenW;
+                if ((b.enabled) && (screenX < x + radius && screenX > x - radius) && (Gdx.graphics.getHeight() - screenY < y + radius && Gdx.graphics.getHeight() - screenY > y - radius)) {
                     switch (b.target) {
                         case 0:
                             this.dispose();
-                            game.currLevel = game.currLevel == levels.length -1 ? 0 : game.currLevel + 1;
                             game.setScreen(new StickyGolf(game));
                         case 1:
                             golfBall.cameraFollow = !golfBall.cameraFollow;
                             desiredCameraCoords = golfBallCoords;
+                            UIButtons.get(3).enabled = !UIButtons.get(3).enabled;
+                            UIButtons.get(4).enabled = !UIButtons.get(4).enabled;
+                            lastCameraZoom = camera.zoom == 1 ? lastCameraZoom : camera.zoom;
+                            camera.zoom = camera.zoom == 1 ? lastCameraZoom : 1;
                             break;
                         case 2:
                             slowmotion = !slowmotion;
@@ -533,28 +585,18 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
                                 step = 1 / 60f;
                             }
                             break;
+                        case 3:
+                            camera.zoom -= camera.zoom > 0.5f ? 0.2f : 0;
+                            break;
+                        case 4:
+                            camera.zoom += camera.zoom < 2f ? 0.2f : 0;
+                            break;
                         default:
                             break;
                     }
                 }
             }
         }
-        if (screenX > Gdx.graphics.getWidth() * 3 / 4 && !golfBall.cameraFollow && ballPressed) {
-            ballPressed = false;
-            zoomChange = true;
-            originalZoomPoint = screenY;
-        }
-        if (ballPressed) {
-            if (golfBall.cameraFollow) {
-                ballTouched = true;
-            } else {
-                desiredCameraCoords = worldCoords;
-            }
-        }
-        return true;
-    }
-
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (ballTouched && drawTrajectory) {
             if (golfBallBody.getJointList().size == 0) {
                 golfBall.airHits++;
@@ -569,12 +611,12 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             applyForceCount = (int) (1 / (step * 60));
         }
         ballTouched = false;
-        zoomChange = false;
         drawTrajectory = false;
         return true;
     }
 
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        Vector2 worldCoords = getWorldCoords(new Vector2(screenX, Gdx.graphics.getHeight() - screenY));
         if (ballTouched) {
             drawTrajectory = true;
             int powerMult = 10;
@@ -588,12 +630,15 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             }
             forceX = ((Gdx.graphics.getWidth() / 2) - screenX) * (float) screenW / Gdx.graphics.getWidth() * powerMult / PIXELS_TO_METRES;
             forceY = (screenY - (Gdx.graphics.getHeight() / 2)) * (float) screenH / Gdx.graphics.getHeight() * powerMult / PIXELS_TO_METRES;
-        } else if (zoomChange) {
-            int difference = ((originalZoomPoint - screenY) / 100) + 1;
-            camera.viewportHeight = (screenH * difference);
-            camera.viewportWidth = (screenW * difference);
         } else if (!golfBall.cameraFollow) {
-            desiredCameraCoords = getWorldCoords(new Vector2(screenX, Gdx.graphics.getHeight() - screenY));
+            //new Vector2((Gdx.graphics.getWidth() / screenW) * (Gdx.graphics.getWidth()/2 - screenX) + worldCoords.x,
+             //   (Gdx.graphics.getHeight() / screenH) * (Gdx.graphics.getHeight()/2 - Gdx.graphics.getHeight() + screenY) + worldCoords.y);
+            if (touchDownPosition != null) {
+                desiredCameraCoords = new Vector2((touchDownPosition.x - worldCoords.x) * 5 * camera.zoom + touchDownCameraPosition.x, (touchDownPosition.y - worldCoords.y) * 3 * camera.zoom + touchDownCameraPosition.y);
+            } else {
+                touchDownPosition = worldCoords;
+                touchDownCameraPosition = new Vector2(camera.position.x, camera.position.y);
+            }
         }
         return true;
     }
@@ -683,6 +728,12 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             platformBody.setUserData(p);
             platformBody.getFixtureList().get(0).setFilterData(platformFilter);
             platformBodies.add(platformBody);
+            /*Pixmap platformPixmap = new Pixmap(p.width, p.height, Pixmap.Format.RGBA8888);
+            platformPixmap.setColor(colours[0]);
+            platformPixmap.fillRectangle(0, 0, p.width, p.height);
+            Texture platformTexture = new Texture(platformPixmap);
+            platformTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+            platformTextures.add(platformTexture);*/
         }
 
         BodyDef movingPlatformBodyDef = new BodyDef();
@@ -780,6 +831,12 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
             boxBody.createFixture(boxFixtureDef);
             boxBody.setUserData(b);
             boxBodies.add(boxBody);
+            Pixmap boxPixmap = new Pixmap(b.width, b.height, Pixmap.Format.RGBA8888);
+            boxPixmap.setColor(colours[13]);
+            boxPixmap.fillRectangle(0, 0, b.width, b.height);
+            Texture boxTexture = new Texture(boxPixmap);
+            boxTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+            boxTextures.add(boxTexture);
         }
 
         boxShape.dispose();
@@ -841,8 +898,13 @@ public class StickyGolf implements ApplicationListener, InputProcessor, Screen {
     }
 
     private Vector2 getWorldCoords(Vector2 screenCoords) {
-        return new Vector2(camera.position.x + (screenCoords.x - Gdx.graphics.getWidth() / 2) * ((float) screenW / Gdx.graphics.getWidth()),
-                camera.position.y + (screenCoords.y - Gdx.graphics.getHeight() / 2) * ((float) screenH / Gdx.graphics.getHeight()));
+        return new Vector2(camera.position.x + (screenCoords.x - Gdx.graphics.getWidth() / 2) * (screenW / Gdx.graphics.getWidth()),
+                camera.position.y + (screenCoords.y - Gdx.graphics.getHeight() / 2) * (screenH / Gdx.graphics.getHeight()));
+    }
+
+    private Vector2 getScreenCoords(Vector2 worldCoords) {
+        return new Vector2((worldCoords.x - camera.position.x) * (Gdx.graphics.getWidth() / screenW) + Gdx.graphics.getWidth() / 2,
+                (worldCoords.y - camera.position.y) * (Gdx.graphics.getHeight() / screenH) + Gdx.graphics.getHeight() / 2);
     }
 
     private double getDistance(Vector2 obj1, Vector2 obj2) {
